@@ -4,7 +4,7 @@ import './Input.css'
 const Input = ({messageText, setMessageText, sendMessage}) => (
   <form className="form">
     <input
-      className="input"
+      className="inputBox"
       type="text"
       placeholder="Type a message..."
       value={messageText}

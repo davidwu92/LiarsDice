@@ -22,16 +22,19 @@ html, body {
 }
 
 .joinInnerContainer {
-  width: 20%;
+  width: 30%;
 }
 
 .joinInput {
   border-radius: 0;
   padding: 15px 20px;
+  border-style: double;
+  border-bottom: 0 !important;
+  box-shadow: none !important;
   width: 100%;
 }
 
-.heading {
+.joinHeading {
   color: white;
   font-size: 2.5em;
   padding-bottom: 10px;
