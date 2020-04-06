@@ -16,7 +16,7 @@ const Chat =({location}) => { //pass in the URL; it comes from react router!
   const [name, setName] = useState('')
   const [room, setRoom] = useState('')
   const [users, setUsers] = useState('')
-  const ENDPOINT = 'https://liars-dice-app.herokuapp.com/'
+  const ENDPOINT = 'http://localhost:5000'
 
   //this useEffect is for joining a room. It'll run whenever theres a change to ENDPOINT or the url.
   useEffect(()=>{
@@ -57,9 +57,7 @@ const Chat =({location}) => { //pass in the URL; it comes from react router!
     if(message){ //if there's a message, emit that message to the server!
       socket.emit('sendMessage', message, ()=>setMessage(''))
     }
-  }
-
-  console.log(message, messages)
+  }  
 
   return(
     <>
