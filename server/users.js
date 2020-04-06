@@ -3,8 +3,9 @@
 const users = []
 
 //add users
-const addUser = ({id, name, room}) =>{
-  //change the names: Javascript Mastery => javascriptmastery
+const addUser = ({id, name, room}) =>{ //(id of socket instance, name of user, room name. All passed from server.)
+  //change the names; Javascript Mastery => javascriptmastery
+  //trimming removes whitespace.
   name = name.trim().toLowerCase()
   room = room.trim().toLowerCase()
   const existingUser = users.find((user)=>user.room ===room && user.name===name) //find if there's already an existing user with the same name.

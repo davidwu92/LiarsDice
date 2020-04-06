@@ -9,13 +9,12 @@ import Input from './../Input'
 import TextContainer from './../TextContainer'
 
 //here's where most of the socket.io logic will be stored.
-//create an empty variable outside of the component.
 let socket;
 
-const Chat =({location}) => { //pass in the URL; it comes from react router!
-  const [name, setName] = useState('')
-  const [room, setRoom] = useState('')
-  const [users, setUsers] = useState('')
+const Chat =({location}) => { //pass in the URL (location); it comes from react router!
+  const [name, setName] = useState('') //name will be MY name; set once in the first useEffect, never changes.
+  const [room, setRoom] = useState('') //same with room.
+  
   const ENDPOINT = 'http://localhost:5000'
 
   //this useEffect is for joining a room. It'll run whenever theres a change to ENDPOINT or the url.
@@ -25,26 +24,30 @@ const Chat =({location}) => { //pass in the URL; it comes from react router!
     setName(name)
     setRoom(room)
     console.log(socket)
+
     //emit lets us pass in strings and data! This data can be received on backend.
-    //the event will be called JOIN. on Join, we pass the object w/ our NAME and our ROOM.
-    //as a 3rd parameter, we can pass an error-handling callback!
+    //Socket.emit needs... 1. the event name ("join"); server will listen w/ socket.on("join")
+    //2. an object of the info needed, in this case the NAME and ROOM.
+    //3. Some error-handling callback that'll run if there's an error.
     socket.emit('join', {name, room},()=>{
     });
     
+    //to finish our useEffect hook, we give it a return function that'll run when it's time to cleanup.
     //used for disconnect/unmounting (leaving chat)
     return ()=>{
       socket.emit('disconnect')
-      socket.off()
+      socket.disconnect()
     }
   },[ENDPOINT, location.search])
 
-
+  const [users, setUsers] = useState('') //users is the array of all users in this chatroom.
   const [message, setMessage] = useState('')
   const [messages, setMessages] = useState([])
   //this useEffect is for MESSAGING. Runs whenever there's a change to Messages array.
   useEffect(()=>{
     socket.on('message', (message)=>{
-      setMessages([...messages, message]) //whenever a message ie sent, push to messages array.
+      console.log(message) //{user: "message sender", text:"some message"}
+      setMessages([...messages, message]) //whenever a message is sent, "push" to messages array.
     })
     socket.on("roomData", ({users})=>{
       setUsers(users)
@@ -69,9 +72,10 @@ const Chat =({location}) => { //pass in the URL; it comes from react router!
           {/* Messages. Shows all past messages. */}
           <Messages messages={messages} name={name}/>
 
-          {/* Input component needs message, setMessage, and sendMessage. */}
+          {/* Input component (typing area) needs message, setMessage, and sendMessage. */}
           <Input message={message} setMessage={setMessage} sendMessage={sendMessage}/>
         </div>
+        {/* TextContainer currently shows all the users in the room. */}
         <TextContainer users={users}/>
       </div>
     </>
