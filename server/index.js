@@ -19,16 +19,17 @@ const {addUser, removeUser, getUser, getUsersInRoom} = require('./users.js')
 io.on('connection', (socket)=>{ //this is a socket that'll be connected as a client side socket.
   console.log("We have a new connection!!")
 
-  //RECEIVES information from the front end. In Chat.js, we EMITTED an event called 'join'.
-  //so this all happens when somebody JOINS the room. We'll emit out some admin-generated message when someone joins the room.
+  //In Chat.js, we EMIT an event called 'join' when someone joins the room.
+  //We'll emit out some admin-generated message when someone joins the room.
   socket.on('join',({name, room}, callback)=>{
 
-    const{error, user} = addUser({id: socket.id, name, room}) //remember, addUser needs id, name and room.
+    const{error, user} = addUser({id: socket.id, name, room, hand:[2,3,4,5,6], isMyTurn: false}) //remember, addUser needs id, name and room.
     if (error) return callback(error) //this callback is handled if there's an error. We defined this error as "Username is taken" in users.js.
     
     //if there aren't any errors...
     //Let's emit a message to the user from admin to welcome them.
-    socket.emit('message',{user:'admin', text:`Hi ${user.name}! Welcome to the room "${user.room}". ID: ${user.id}`})
+    // socket.emit('message',{user:'admin', text:`Hi ${user.name}! Welcome to the room "${user.room}".`})
+    socket.emit('message',{user:'admin', text:`${user.name} joins the room "${user.room}". ID=${user.id}. Hand=${user.hand}. isMyTurn=${user.isMyTurn}.`})
     
     //This method sends a message to everyone in that room EXCEPT the just-joined user.
     //Don't forget we need to broadcast.to(user.room)!

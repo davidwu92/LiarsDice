@@ -17,9 +17,9 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
   
   const ENDPOINT = 'http://localhost:5000'
 
-  //this useEffect is for joining a room. It'll run whenever theres a change to ENDPOINT or the url.
+  //this useEffect is for a user joining. It'll run whenever theres a change to ENDPOINT or the url.
   useEffect(()=>{
-    const {name, room} = queryString.parse(location.search)
+    const {name, room} = queryString.parse(location.search) //grab Name and Room from the url (which was created in Join.js)
     socket = io(ENDPOINT)
     setName(name)
     setRoom(room)
@@ -27,7 +27,7 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
 
     //emit lets us pass in strings and data! This data can be received on backend.
     //Socket.emit needs... 1. the event name ("join"); server will listen w/ socket.on("join")
-    //2. an object of the info needed, in this case the NAME and ROOM.
+    //2. an object of the info, in this case the NAME and ROOM.
     //3. Some error-handling callback that'll run if there's an error.
     socket.emit('join', {name, room},()=>{
     });
@@ -65,14 +65,6 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
   return(
     <>
       <div className="outerContainer">
-        {/* <div className="leftStuff">
-          <h1>Hello World</h1>
-          <p>User 1: ? ? ? ? ?</p>
-          <p>User 2: ? ? ? ? ?</p>
-          <p>User 3: ? ? ? ? ?</p>
-          <p>User 4: ? ? ? ? ?</p>
-          <p>User 5: ? ? ? ? ?</p>
-        </div> */}
         <div className="container">
           {/* We need to pass off our ROOM property to the infobar! */}
           <InfoBar room={room}/> 
