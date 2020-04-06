@@ -28,7 +28,6 @@ html, body {
 .joinInput {
   border-radius: 0;
   padding: 15px 20px;
-  border-style: double;
   border-bottom: 0 !important;
   box-shadow: none !important;
   width: 100%;

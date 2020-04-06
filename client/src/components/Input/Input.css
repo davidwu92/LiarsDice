@@ -6,6 +6,8 @@
 .inputBox {
   border: none ;
   border-radius: 0 ;
+  border-bottom: 0 !important;
+  box-shadow: none !important;
   padding: 5% ;
   width: 80% ;
   font-size: 1.2em ;
