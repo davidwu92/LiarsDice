@@ -3,6 +3,7 @@ import './InfoBar.css'
 import closeIcon from '../../icons/closeIcon.png'
 import onlineIcon from '../../icons/onlineIcon.png'
 
+// This is the TOP of Chat.js: shows the online icon and room name.
 const InfoBar = ({room}) =>(
   <div className="infoBar">
     <div className="leftInnerContainer">
@@ -12,7 +13,7 @@ const InfoBar = ({room}) =>(
     </div>
 
     <div className="rightInnerContainer">
-      {/* Close Icon. */}
+      {/* Close Icon. Clicking it will take us back to homepage. */}
       <a href="/"><img src={closeIcon} alt="close"/></a> 
     </div>
   </div>

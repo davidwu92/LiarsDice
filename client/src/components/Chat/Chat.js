@@ -46,7 +46,7 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
   //this useEffect is for MESSAGING. Runs whenever there's a change to Messages array.
   useEffect(()=>{
     socket.on('message', (message)=>{
-      console.log(message) //{user: "message sender", text:"some message"}
+      // console.log(message) //{user: "message sender", text:"some message"}
       setMessages([...messages, message]) //whenever a message is sent, "push" to messages array.
     })
     socket.on("roomData", ({users})=>{
