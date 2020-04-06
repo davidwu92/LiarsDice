@@ -29,11 +29,11 @@ io.on('connection', (socket)=>{ //this is a socket that'll be connected as a cli
     //if there aren't any errors...
     //Let's emit a message to the user from admin to welcome them.
     // socket.emit('message',{user:'admin', text:`Hi ${user.name}! Welcome to the room "${user.room}".`})
-    socket.emit('message',{user:'admin', text:`${user.name} joins the room "${user.room}". ID=${user.id}. Hand=${user.hand}. isMyTurn=${user.isMyTurn}.`})
+    socket.emit('message',{user:'admin', text:`${user.name} joins the room "${user.room}". ID=${user.id}. Hand=${user.hand}. isMyTurn=${user.isMyTurn}.`, isGameAction: false})
     
     //This method sends a message to everyone in that room EXCEPT the just-joined user.
     //Don't forget we need to broadcast.to(user.room)!
-    socket.broadcast.to(user.room).emit('message',{user:'admin', text:`${user.name} has joined!`})
+    socket.broadcast.to(user.room).emit('message',{user:'admin', text:`${user.name} has joined the room!`,  isGameAction: false})
 
     //This socket method: Join; this joins a user into a room. Simple.
     socket.join(user.room)
@@ -47,9 +47,9 @@ io.on('connection', (socket)=>{ //this is a socket that'll be connected as a cli
   
   //user-generated messaging.
   //We'll be waiting for 'sendMessage' to be emitted from the front end.
-  socket.on('sendMessage', (message, callback)=>{
+  socket.on('sendMessage', (messageObj, callback)=>{
     const user = getUser(socket.id)
-    io.to(user.room).emit('message', {user: user.name, text: message})
+    io.to(user.room).emit('message', {user: user.name, text: messageObj.messageText, isGameAction: messageObj.isGameAction})
     io.to(user.room).emit('roomData', {room: user.room, users: getUsersInRoom(user.room)})
 
     callback() //this callback will let us do something after the user has sent something on the front end.

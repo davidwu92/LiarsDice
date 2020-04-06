@@ -41,8 +41,9 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
   },[ENDPOINT, location.search])
 
   const [users, setUsers] = useState('') //users is the array of all users in this chatroom.
-  const [message, setMessage] = useState('')
-  const [messages, setMessages] = useState([])
+  const [messageText, setMessageText] = useState('') //TYPED MESSAGE state.
+  const [messages, setMessages] = useState([]) //all messages ever sent.
+
   //this useEffect is for MESSAGING. Runs whenever there's a change to Messages array.
   useEffect(()=>{
     socket.on('message', (message)=>{
@@ -54,11 +55,11 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
     })
   },[messages, users])
 
-  //function for sending messages.
+  //function for sending TEXT messages; this is not a game action.
   const sendMessage = (event)=>{
     event.preventDefault()
-    if(message){ //if there's a message, emit that message to the server!
-      socket.emit('sendMessage', message, ()=>setMessage(''))
+    if(messageText){ //if there's a message, emit that message to the server!
+      socket.emit('sendMessage', {messageText: messageText, isGameAction:false}, ()=>setMessageText(''))
     }
   }  
 
@@ -73,7 +74,7 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
           <Messages messages={messages} name={name}/>
 
           {/* Input component (typing area) needs message, setMessage, and sendMessage. */}
-          <Input message={message} setMessage={setMessage} sendMessage={sendMessage}/>
+          <Input messageText={messageText} setMessageText={setMessageText} sendMessage={sendMessage}/>
         </div>
         {/* TextContainer currently shows all the users in the room. */}
         <TextContainer users={users}/>
