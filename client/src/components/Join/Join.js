@@ -18,9 +18,9 @@ const Join = () =>{
           <div><input placeholder="Room" className="joinInput mt-20" type="text" onChange={(event)=>setRoom(event.target.value)}></input></div>
           {/* CHAT component now takes the data: name and room.*/}
           <Link 
-            onClick={(event)=>(!name || !room) ? event.preventDefault() : null}
+            onClick={(event)=>(!name || !room || name=="admin") ? event.preventDefault() : null}
             to={`/chat?name=${name}&room=${room}`}>
-            <button className="button mt-20" type="submit">Sign In</button>
+            <button className="button mt-20" type="submit">Join Room</button>
           </Link>
         </div>
       </div>

@@ -11,6 +11,8 @@ const addUser = ({id, name, room, hand, isMyTurn}) =>{ //(id of socket instance,
   const existingUser = users.find((user)=>user.room ===room && user.name===name) //find if there's already an existing user with the same name.
   if (existingUser){
     return{error: 'Username is taken.'}
+  } else if (name==="admin"){
+    return{error: 'You cannot use the name "admin".'}
   }
   const user = {id, name, room, hand, isMyTurn}
   users.push(user)
