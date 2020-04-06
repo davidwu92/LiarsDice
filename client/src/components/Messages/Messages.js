@@ -8,6 +8,7 @@ const Messages = ({messages, name}) => (
   <ScrollToBottom className="messages">
     {messages.map((message, i)=>
       <div key={i}>
+        {/* Every message will have a KEY and a MESSAGE; the Message is created with the Message component. */}
         <Message message={message} name={name}/>
       </div>)
     }

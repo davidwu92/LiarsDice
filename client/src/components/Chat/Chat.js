@@ -65,6 +65,14 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
   return(
     <>
       <div className="outerContainer">
+        {/* <div className="leftStuff">
+          <h1>Hello World</h1>
+          <p>User 1: ? ? ? ? ?</p>
+          <p>User 2: ? ? ? ? ?</p>
+          <p>User 3: ? ? ? ? ?</p>
+          <p>User 4: ? ? ? ? ?</p>
+          <p>User 5: ? ? ? ? ?</p>
+        </div> */}
         <div className="container">
           {/* We need to pass off our ROOM property to the infobar! */}
           <InfoBar room={room}/> 

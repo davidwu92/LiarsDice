@@ -26,6 +26,7 @@
   margin-bottom: 0px;
 }
 
+/* Small/Medium Screens won't show TextContainer at all, apparently. */
 @media (min-width: 320px) and (max-width: 1200px) {
   .textContainer {
     display: none;

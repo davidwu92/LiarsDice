@@ -1,0 +1,45 @@
+We'll deploy on TWO sites.
+
+~~~~Backend/Server Folder is deployed to HEROKU.~~~~
+1. Create a new app on Heroku. Call it liars-dice-app.
+2. Make sure cors is required and used in server/index.js:
+    line 5: const cors = require('cors')
+    line 71: app.use(cors())
+3. In the terminal, in SERVER directory...
+  heroku login (log in through browser)
+  git init (we already did)
+  heroku git:remote -a liars-dice-app
+  
+4. Make sure server directory has .gitignore (with /node_modules) and a Procfile (web: node index.js)
+    THEN make sure to change the server's package.json script: "start": "node index.js" (instead of nodemon)
+
+5. Back to terminal:
+  git add .
+  git commit -am "commit message"
+  git push heroku master
+
+6. Now that SERVER is deployed, COPY that url because we'll need it when deploying the front end.
+    https://liars-dice-app.herokuapp.com/
+
+
+~~~~Frontend/Client Folder is deployed to NETLIFY.~~~~
+
+1. Go to Chat.js and change the ENDPOINT to that url (instead of `localhost:5000`)
+
+2. Log into Netlify. Right click Client, Reveal in File Explorer. DRAG AND DROP CLIENT FOLDER into the Netlify space.
+
+3. Install Netlify CLI globally: npm i netlify-cli -g
+
+4. Terminal: in CLIENT directory...
+    netlify login
+    netlify deploy. It'll ask some questions; we DON'T need a site name.
+        ~~IMPORTANT~~
+        Netlify will ask for a Publish Directory, which we wanna do from a build. so Cntrl C to get out.
+
+5. Terminal: in CLIENT directory,
+    npm run build
+        (Once the build folder is generated, we can tell Netlify we want to publish THAT build.)
+    netlify deploy
+    ?Publish directory: ./build
+
+6. Now we're done. Live Draft URL will be where our front-end is hosted.
