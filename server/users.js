@@ -3,7 +3,7 @@
 const users = []
 
 //add users
-const addUser = ({id, name, room, hand, isMyTurn}) =>{ //(id of socket instance, name of user, room name. All passed from server.)
+const addUser = ({id, name, room, hand, isMyTurn, isMaster}) =>{ //(id of socket instance, name of user, room name. All passed from server.)
   //change the names; Javascript Mastery => javascriptmastery
   //trimming removes whitespace.
   name = name.trim().toLowerCase()
@@ -14,8 +14,10 @@ const addUser = ({id, name, room, hand, isMyTurn}) =>{ //(id of socket instance,
   } else if (name==="admin"){
     return{error: 'You cannot use the name "admin".'}
   }
-  const user = {id, name, room, hand, isMyTurn}
+
+  const user = {id, name, room, hand, isMyTurn, isMaster}
   users.push(user)
+  
   return{user}
 }
 

@@ -59,9 +59,18 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
   const sendMessage = (event)=>{
     event.preventDefault()
     if(messageText){ //if there's a message, emit that message to the server!
-      socket.emit('sendMessage', {messageText: messageText, isGameAction:false}, ()=>setMessageText(''))
+      let messageObj = {messageText: messageText, isGameAction:false}
+      socket.emit('sendMessage', messageObj, ()=>setMessageText(''))
     }
   }  
+
+  const startGame = () =>{
+    if(users.length>1){
+      console.log("Game starting.")
+    } else {
+      console.log("We need at least two players to start the game.")
+    }
+  }
 
   return(
     <>
@@ -77,7 +86,7 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
           <Input messageText={messageText} setMessageText={setMessageText} sendMessage={sendMessage}/>
         </div>
         {/* TextContainer currently shows all the users in the room. */}
-        <TextContainer users={users}/>
+        <TextContainer users={users} name={name} startGame={startGame}/>
       </div>
     </>
   )
