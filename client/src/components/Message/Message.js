@@ -23,7 +23,7 @@ const Message = ({message:{user, text, isGameAction}, name}) => {
     )
     :( //SENT BY SOMEONE ELSE
       <div className="messageContainer justifyStart">
-        <div className={trimmedName==="admin" ? "messageBox backgroundLight" : "messageBox orange lighten-3"}>
+        <div className={user!=="admin" ? "messageBox backgroundLight" : "messageBox orange lighten-4"}>
           {isGameAction ? 
             <p className="messageText purple-text"><b>{ReactEmoji.emojify(text)}</b></p>
             : <p className="messageText colorDark">{ReactEmoji.emojify(text)}</p>}
