@@ -1,14 +1,14 @@
 import React from 'react'
 import './Input.css'
 
-const Input = ({message, setMessage, sendMessage}) => (
+const Input = ({messageText, setMessageText, sendMessage}) => (
   <form className="form">
     <input
-      className="input"
+      className="inputBox"
       type="text"
       placeholder="Type a message..."
-      value={message}
-      onChange={(event)=> setMessage(event.target.value)}
+      value={messageText}
+      onChange={(event)=> setMessageText(event.target.value)}
       onKeyPress={event=> event.key==='Enter' ? sendMessage(event) : null}
     />
     <button className="sendButton" onClick={(event)=>sendMessage(event)}>Send</button>

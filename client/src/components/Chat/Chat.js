@@ -17,9 +17,9 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
   
   const ENDPOINT = 'http://localhost:5000'
 
-  //this useEffect is for joining a room. It'll run whenever theres a change to ENDPOINT or the url.
+  //this useEffect is for a user joining. It'll run whenever theres a change to ENDPOINT or the url.
   useEffect(()=>{
-    const {name, room} = queryString.parse(location.search)
+    const {name, room} = queryString.parse(location.search) //grab Name and Room from the url (which was created in Join.js)
     socket = io(ENDPOINT)
     setName(name)
     setRoom(room)
@@ -27,7 +27,7 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
 
     //emit lets us pass in strings and data! This data can be received on backend.
     //Socket.emit needs... 1. the event name ("join"); server will listen w/ socket.on("join")
-    //2. an object of the info needed, in this case the NAME and ROOM.
+    //2. an object of the info, in this case the NAME and ROOM.
     //3. Some error-handling callback that'll run if there's an error.
     socket.emit('join', {name, room},()=>{
     });
@@ -40,9 +40,10 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
     }
   },[ENDPOINT, location.search])
 
-  const [users, setUsers] = useState('') //users is the array of all users in this chatroom.
-  const [message, setMessage] = useState('')
-  const [messages, setMessages] = useState([])
+  const [users, setUsers] = useState('') //users is the array of all users in this chatroom. Not all of them are necessarily players.
+  const [messageText, setMessageText] = useState('') //TYPED MESSAGE state.
+  const [messages, setMessages] = useState([]) //all messages ever sent.
+
   //this useEffect is for MESSAGING. Runs whenever there's a change to Messages array.
   useEffect(()=>{
     socket.on('message', (message)=>{
@@ -54,25 +55,39 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
     })
   },[messages, users])
 
-  //function for sending messages.
+  //function for sending TEXT messages; this is not a game action.
   const sendMessage = (event)=>{
     event.preventDefault()
-    if(message){ //if there's a message, emit that message to the server!
-      socket.emit('sendMessage', message, ()=>setMessage(''))
+    if(messageText){ //if there's a message, emit that message to the server!
+      let messageObj = {messageText: messageText, isGameAction:false}
+      socket.emit('sendMessage', messageObj, ()=>setMessageText(''))
     }
   }  
+
+  //useEffect: takes care of game data.
+  useEffect(()=>{
+    socket.on('gameData', (object)=>{
+      console.log(object)
+      setUsers(object.users)
+    })
+  },[users])
+  
+
+
+  //START NEW GAME
+  const startGame = () =>{
+    if(users.length>1){ //since only the master can start the game, pass master's name.
+      socket.emit('startGame', {room, name}, ()=>{
+        console.log("Game starting.")
+      })
+    } else {
+      console.log("We need at least two players to start the game.")
+    }
+  }
 
   return(
     <>
       <div className="outerContainer">
-        {/* <div className="leftStuff">
-          <h1>Hello World</h1>
-          <p>User 1: ? ? ? ? ?</p>
-          <p>User 2: ? ? ? ? ?</p>
-          <p>User 3: ? ? ? ? ?</p>
-          <p>User 4: ? ? ? ? ?</p>
-          <p>User 5: ? ? ? ? ?</p>
-        </div> */}
         <div className="container">
           {/* We need to pass off our ROOM property to the infobar! */}
           <InfoBar room={room}/> 
@@ -81,10 +96,35 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
           <Messages messages={messages} name={name}/>
 
           {/* Input component (typing area) needs message, setMessage, and sendMessage. */}
-          <Input message={message} setMessage={setMessage} sendMessage={sendMessage}/>
+          <Input messageText={messageText} setMessageText={setMessageText} sendMessage={sendMessage}/>
+          
+          {/* MY TURN: OPTIONS */}
+          <div className="green lighten-1">
+            <div class="input-field">
+              <select className="browser-default green lighten-1 white-text" style={{width: "35%", display:"inline"}}>
+                <option value="" disabled selected>Call a Quantity</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+              </select>
+              <select className="browser-default green lighten-1 white-text" style={{width: "35%", display:"inline"}}>
+                <option value="" disabled selected>Dice Value</option>
+                <option value="2">Twos</option>
+                <option value="3">Threes</option>
+                <option value="4">Fours</option>
+                <option value="5">Fives</option>
+                <option value="6">Sixes</option>
+              </select>
+              <button className="btn green right">Make Call!</button>
+            </div>
+          </div>
+          <button className="btn red">Call Liar!</button>
         </div>
         {/* TextContainer currently shows all the users in the room. */}
-        <TextContainer users={users}/>
+        <TextContainer users={users} name={name} startGame={startGame}/>
       </div>
     </>
   )

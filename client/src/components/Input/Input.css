@@ -3,12 +3,14 @@
   border-top: 2px solid #D3D3D3;
 }
 
-.input {
-  border: none;
-  border-radius: 0;
-  padding: 5%;
-  width: 80%;
-  font-size: 1.2em;
+.inputBox {
+  border: none ;
+  border-radius: 0 ;
+  border-bottom: 0 !important;
+  box-shadow: none !important;
+  padding: 5% ;
+  width: 80% ;
+  font-size: 1.2em ;
 }
 
 input:focus, textarea:focus, select:focus{

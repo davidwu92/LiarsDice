@@ -10,7 +10,7 @@
 .activeContainer {
   display: flex;
   align-items: center;
-  margin-bottom: 50%;
+  /* margin-bottom: 50%; */
 }
 
 .activeItem {
@@ -28,7 +28,7 @@
 
 /* Small/Medium Screens won't show TextContainer at all, apparently. */
 @media (min-width: 320px) and (max-width: 1200px) {
-  .textContainer {
+  /* .textContainer {
     display: none;
-  }
+  } */
 }
