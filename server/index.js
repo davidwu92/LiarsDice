@@ -78,20 +78,25 @@ io.on('connection', (socket)=>{ //this is a socket that'll be connected as a cli
 
   //MAKE A CALL
   socket.on('makeCall', ({room, name, call, turnIndex}, callback)=>{
-    console.log(`${name} made a call: ${call}`) //call: [2, "sixes"]
+    console.log(`${name} made the call: ${call}`) //call: [2, 'Fives']
+    
+    //pass turn to next player.
     setPlayerTurn(room, turnIndex)
+
     //emit that call to whole room.
     io.to(room).emit('message',{user: name, text:`I call ${call[0] + " " + call[1]}.`, isGameAction: true}) 
     io.to(room).emit('gameData', {users: getUsersInRoom(room), turnIndex: turnIndex+1, currentCall: call})
     callback()
   })
 
+  //DISCONNECT FROM ROOM (leave room.)
   socket.on('disconnect', ()=>{ //Somebody is disconnecting.
     console.log("User has left the socket.")
     //add logic: IF THE MASTER LEFT AND THERE ARE STILL ROOM MEMBERS, CHOOSE A NEW MASTER.
     const user = removeUser(socket.id)
     if(user){
       io.to(user.room).emit('message', {user: "admin", text:`${user.name} has left.`})
+      io.to(user.room).emit('roomData', {room: user.room, users: getUsersInRoom(user.room)})
     }
   })
   
