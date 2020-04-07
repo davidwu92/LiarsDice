@@ -27,10 +27,12 @@ const TurnOptions = ({currentCall, myQuantity, setMyQuantity, myValue, setMyValu
             <option value="" disabled selected>Dice Value</option>
             {currentCall ?
               values.map((diceValue, index)=>(
-                (index < values.indexOf(currentCall[1])) ? <option value={diceValue} disabled>{diceValue}</option>
+                (index < values.indexOf(currentCall[1]) || index > values.indexOf(currentCall[1])+2) ? <option value={diceValue} disabled>{diceValue}</option>
                   :<option value={diceValue}>{diceValue}</option>))
               :
-              values.map(diceValue=>(<option value={diceValue}>{diceValue}</option>))
+              values.map((diceValue, index)=>(
+                (index>2) ? <option value={diceValue} disabled>{diceValue}</option> 
+                  :<option value={diceValue}>{diceValue}</option>))
             }
             {/* <option value={"Twos"}>Twos</option>
             <option value={"Threes"}>Threes</option>
