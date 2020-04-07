@@ -1,9 +1,10 @@
 //lets create helper functions to manage users.
-//JOINING IN, SIGNING OUT, removing/adding users. Even keeping track of which users are in what rooms.
+//JOINING IN, SIGNING OUT, removing/adding users, users' hands, etc.
 let users = []
 const ongoingGames = {}
 
-//add users
+//ADD A USER to socket. Each user is in a room specified in Join.js; starts off with...
+// hand: false, isMyTurn: false, isMaster: false, roundsLost: 0, roundsWon: 0.
 const addUser = ({id, name, room, hand, isMyTurn, isMaster, roundsLost, roundsWon}) =>{ //(id of socket instance, name of user, room name. All passed from server.)
   //change the names; Javascript Mastery => javascriptmastery
   //trimming removes whitespace.
@@ -22,7 +23,7 @@ const addUser = ({id, name, room, hand, isMyTurn, isMaster, roundsLost, roundsWo
   return{user}
 }
 
-//remove users
+//remove users from socket.
 const removeUser = (id) =>{
   const index = users.findIndex((user)=>user.id===id)
   if(index !=-1){
