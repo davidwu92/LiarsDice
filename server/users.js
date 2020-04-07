@@ -4,7 +4,7 @@ let users = []
 const ongoingGames = {}
 
 //add users
-const addUser = ({id, name, room, hand, isMyTurn, isMaster}) =>{ //(id of socket instance, name of user, room name. All passed from server.)
+const addUser = ({id, name, room, hand, isMyTurn, isMaster, roundsLost, roundsWon}) =>{ //(id of socket instance, name of user, room name. All passed from server.)
   //change the names; Javascript Mastery => javascriptmastery
   //trimming removes whitespace.
   name = name.trim().toLowerCase()
@@ -16,7 +16,7 @@ const addUser = ({id, name, room, hand, isMyTurn, isMaster}) =>{ //(id of socket
     return{error: 'You cannot use the name "admin".'}
   }
 
-  const user = {id, name, room, hand, isMyTurn, isMaster}
+  const user = {id, name, room, hand, isMyTurn, isMaster, roundsLost, roundsWon}
   users.push(user)
   
   return{user}
@@ -38,7 +38,7 @@ const getUsersInRoom = (room) => users.filter((user)=>user.room===room)
 
 
 //GAME FUNCTIONS
-const startGameForRoom = (room)=>{
+const startGameForRoom = (room)=>{ //NEW GAME FUNCTION
   users.forEach(user=>{
     if(user.room===room){
       user.hand=[Math.ceil(Math.random()*6),Math.ceil(Math.random()*6),Math.ceil(Math.random()*6),Math.ceil(Math.random()*6),Math.ceil(Math.random()*6)]
@@ -49,4 +49,18 @@ const startGameForRoom = (room)=>{
   })
 }
 
-module.exports = {addUser, removeUser, getUser, getUsersInRoom, startGameForRoom}
+const setPlayerTurn = (room, turnIndex) =>{ //CHANGE WHOSE TURN IT IS
+  if (users){
+    let players = users.filter((user)=>user.room===room)
+    let callerName = players[turnIndex%players.length].name
+    let nextPlayer = players[(turnIndex+1)%players.length].name
+    users.forEach(user=>{
+      if(user.room===room){
+        if(user.name===callerName){user.isMyTurn = false}
+        if(user.name===nextPlayer){user.isMyTurn = true}
+      }
+    })
+  }
+}
+
+module.exports = {addUser, removeUser, getUser, getUsersInRoom, startGameForRoom, setPlayerTurn}

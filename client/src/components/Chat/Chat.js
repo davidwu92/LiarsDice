@@ -40,7 +40,7 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
     }
   },[ENDPOINT, location.search])
 
-  const [users, setUsers] = useState('') //users is the array of all users in this chatroom. Not all of them are necessarily players.
+  const [users, setUsers] = useState('') //users is the array of all users in this chatroom. Not all of them are necessarily playing.
   const [messageText, setMessageText] = useState('') //TYPED MESSAGE state.
   const [messages, setMessages] = useState([]) //all messages ever sent.
 
@@ -65,15 +65,20 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
   }  
 
   //useEffect: takes care of game data.
+  const [myQuantity, setMyQuantity] = useState(0) //my call: quantity.
+  const [myValue, setMyValue] = useState("") //my call: Dice Value.
+  const [currentCall, setCurrentCall] = useState([]) //i.e. [2, "threes"]
+  const [turnIndex, setTurnIndex] = useState(-1) //use this number to track who's turn it is?
+  const [roundNum, setRoundNum] = useState(0) //use this to track what round we're at?
   useEffect(()=>{
-    socket.on('gameData', (object)=>{
-      console.log(object)
-      setUsers(object.users)
+    socket.on('gameData', (game)=>{
+      setUsers(game.users)
+      setTurnIndex(game.turnIndex)
+      setRoundNum(game.setRoundNum)
+      setCurrentCall(game.currentCall)
     })
-  },[users])
+  },[users, turnIndex, roundNum, currentCall])
   
-
-
   //START NEW GAME
   const startGame = () =>{
     if(users.length>1){ //since only the master can start the game, pass master's name.
@@ -81,13 +86,29 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
         console.log("Game starting.")
       })
     } else {
-      console.log("We need at least two players to start the game.")
+      console.log("You need at least two players to start the game.")
     }
   }
 
+  //MY TURN FUNCTION: making a call.
+  const makeCall = (event) =>{
+    event.preventDefault()
+    // let call = [myQuantity, myValue]
+    let call = [3, "Fives"] //dummy call.
+    socket.emit('makeCall', {room, name, call, turnIndex}, ()=>{
+      console.log(`${name} made the call: ${call[0]+" "+call[1]}`)
+    })
+  }
+
+  const testButton = () =>{
+    console.log("current call: "+currentCall)
+    console.log("turnIndex: "+turnIndex)
+  }
   return(
     <>
       <div className="outerContainer">
+        <button onClick={makeCall}>DUMMY CALL</button>
+        <button onClick={testButton}>TEST BUTTON</button>
         <div className="container">
           {/* We need to pass off our ROOM property to the infobar! */}
           <InfoBar room={room}/> 
@@ -110,15 +131,16 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
                 <option value="6">6</option>
                 <option value="7">7</option>
               </select>
+              <span> </span>
               <select className="browser-default green lighten-1 white-text" style={{width: "35%", display:"inline"}}>
                 <option value="" disabled selected>Dice Value</option>
-                <option value="2">Twos</option>
-                <option value="3">Threes</option>
-                <option value="4">Fours</option>
-                <option value="5">Fives</option>
-                <option value="6">Sixes</option>
+                <option value="Twos">Twos</option>
+                <option value="Threes">Threes</option>
+                <option value="Fours">Fours</option>
+                <option value="Fives">Fives</option>
+                <option value="Sixes">Sixes</option>
               </select>
-              <button className="btn green right">Make Call!</button>
+              <button className="btn green right" onClick={makeCall}>Make Call!</button>
             </div>
           </div>
           <button className="btn red">Call Liar!</button>
