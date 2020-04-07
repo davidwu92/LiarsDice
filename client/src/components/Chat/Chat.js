@@ -139,6 +139,32 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
   }
 
   //MY TURN FUNCTION: Call Liar!
+  const callLiar = (event) => {
+    event.preventDefault()
+    if(roundNum == 0){  //callLiar fails: game isn't running.
+      console.log("callLiar failed: Game hasn't started.")
+      toast(`The game has not started yet.`,
+      {autoClose:4000, delay:0, hideProgressBar: true, type: "error"})
+      return(false)
+    }
+     let currentPlayer = users.filter((user) => user.isMyTurn)
+     if (currentPlayer[0].name !== name) {
+       toast(`It is currently ${currentPlayer[0].name}'s turn.`, {
+         autoClose: 4000,
+         delay: 0,
+         hideProgressBar: true,
+         type: 'error',
+       })
+       return false
+      }
+      // need to get last players name 
+      socket.emit('callLiar', {room, name, turnIndex}, () => {
+        console.log(`${name} called ${name} a liar`)
+      })
+
+    }
+        //  call liar
+          
 //code code code
 
   const testButton = () =>{
@@ -162,7 +188,7 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
           
           {/* MY TURN OPTIONS: either make a call or call liar. Still needs to check if its my turn. */}
           <TurnOptions  currentCall={currentCall} myQuantity={myQuantity} setMyQuantity={setMyQuantity}
-            myValue={myValue} setMyValue={setMyValue} makeCall={makeCall}/>
+            myValue={myValue} setMyValue={setMyValue} makeCall={makeCall} callLiar={callLiar}/>
 
         </div>
         {/* TextContainer currently shows all the users in the room. */}

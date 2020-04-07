@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react'
 
-const TurnOptions = ({currentCall, myQuantity, setMyQuantity, myValue, setMyValue, makeCall}) => {
+const TurnOptions = ({currentCall, myQuantity, setMyQuantity, myValue, setMyValue, makeCall, callLiar}) => {
   const [quantities, setQuantities] = useState([2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20])
   const [values, setValues] = useState(["Twos", "Threes", "Fours", "Fives", "Sixes"])
 
@@ -41,7 +41,7 @@ const TurnOptions = ({currentCall, myQuantity, setMyQuantity, myValue, setMyValu
           <button className="btn green darken-1 right" onClick={makeCall}>Make Call!</button>
         </div>
       </div>
-      <button className="btn red darken-1">Call Liar!</button>
+      <button className="btn red darken-1" onClick={callLiar}>Call Liar!</button>
     </>
   )
 }

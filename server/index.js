@@ -90,6 +90,9 @@ io.on('connection', (socket)=>{ //this is a socket that'll be connected as a cli
   })
 
   //SOMEONE CALLS LIAR; ends round, starts new round.
+  socket.on('callLiar', ({ room, name, call, turnIndex}, callback) => {
+    console.log(`${name} calls ${name} a liar!`)
+  })
   //1. Declare a round winner and a round loser. Loser loses a die AND starts next round.
   //2. Start next round; clear out the currentCall, determine turnIndex, pass in users:getUsersInRoom(room)
 
