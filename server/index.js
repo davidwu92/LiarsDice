@@ -13,7 +13,7 @@ const server = http.createServer(app)
 const io = socketio(server)
 
 //Let's get helper functions from users.js; they will manage all the USER activity.
-const {addUser, removeUser, getUser, getUsersInRoom} = require('./users.js')
+const {addUser, removeUser, getUser, getUsersInRoom, startGameForRoom} = require('./users.js')
 
 //In our server, we run methods that allow us to CONNECT and DISCONNECT from socket.io.
 io.on('connection', (socket)=>{ //this is a socket that'll be connected as a client side socket.
@@ -23,7 +23,7 @@ io.on('connection', (socket)=>{ //this is a socket that'll be connected as a cli
   //We'll emit out some admin-generated message when someone joins the room.
   socket.on('join',({name, room}, callback)=>{
     if(getUsersInRoom(room).length){ //NOT THE FIRST TO JOIN.
-      const{error, user} = addUser({id: socket.id, name, room, hand:[2,3,4,5,6], isMyTurn: false, isMaster: false})
+      const{error, user} = addUser({id: socket.id, name, room, hand:false, isMyTurn: false, isMaster: false})
       if (error) return callback(error)
       
       socket.emit('message',{user:'admin', text:`Hi ${user.name}! Welcome to the room "${user.room}".`, isGameAction: false})
@@ -40,7 +40,7 @@ io.on('connection', (socket)=>{ //this is a socket that'll be connected as a cli
       callback() 
     }
     else { //FIRST JOINER in room: make this user the master.
-      const{error, user} = addUser({id: socket.id, name, room, hand:[2,3,4,5,6], isMyTurn: false, isMaster: true}) //remember, addUser needs id, name and room.
+      const{error, user} = addUser({id: socket.id, name, room, hand:false, isMyTurn: false, isMaster: true}) //remember, addUser needs id, name and room.
       if (error) return callback(error) //this callback is handled if there's an error. We defined this error as "Username is taken" in users.js.
       
       //If no errors, admin emits a welcome message JUST TO the user.
@@ -63,12 +63,17 @@ io.on('connection', (socket)=>{ //this is a socket that'll be connected as a cli
     const user = getUser(socket.id)
     io.to(user.room).emit('message', {user: user.name, text: messageObj.messageText, isGameAction: messageObj.isGameAction})
     io.to(user.room).emit('roomData', {room: user.room, users: getUsersInRoom(user.room)})
-
+    
     callback() //this callback will let us do something after the user has sent something on the front end.
   })
 
-  socket.on('startGame', ({name, room}, callback)=>{ //first person in the room will have power to start game.
-    
+  //GAME START
+  socket.on('startGame', ({room, name}, callback)=>{ //first person in the room will have power to start game.
+    console.log(room + " is starting a game.")
+    startGameForRoom(room)
+    socket.emit('message',{user:'admin', text:`${name} has started the game.`, isGameAction: true})
+    io.to(room).emit('gameData', {users: getUsersInRoom(room), turnIndex: 0})
+    callback()
   })
 
   socket.on('disconnect', ()=>{ //Somebody is disconnecting.

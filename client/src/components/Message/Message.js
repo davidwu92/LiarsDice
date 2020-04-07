@@ -11,20 +11,22 @@ const Message = ({message:{user, text, isGameAction}, name}) => {
   }
   return(
     isSentByCurrentUser 
-    ? (
+    ? ( //SENT BY MYSELF
       <div className="messageContainer justifyEnd">
         <p className="sentText pr-10">{trimmedName}</p>
         <div className="messageBox backgroundBlue">
-          <p className="messageText colorWhite">{ReactEmoji.emojify(text)}</p>
-          <p className="messageText colorWhite">Game Action: {JSON.stringify(isGameAction)}</p>
+          {isGameAction ? 
+            <p className="messageText purple-text"><b>{ReactEmoji.emojify(text)}</b></p>
+            : <p className="messageText colorWhite">{ReactEmoji.emojify(text)}</p>}
         </div>
       </div>
     )
-    :(
+    :( //SENT BY SOMEONE ELSE
       <div className="messageContainer justifyStart">
-        <div className="messageBox backgroundLight">
-          <p className="messageText colorDark">{ReactEmoji.emojify(text)}</p>
-          <p className="messageText colorDark">Game Action: {JSON.stringify(isGameAction)}</p>
+        <div className={trimmedName==="admin" ? "messageBox backgroundLight" : "messageBox orange lighten-3"}>
+          {isGameAction ? 
+            <p className="messageText purple-text"><b>{ReactEmoji.emojify(text)}</b></p>
+            : <p className="messageText colorDark">{ReactEmoji.emojify(text)}</p>}
         </div>
         <p className="sentText pl-10">{user}</p>
       </div>

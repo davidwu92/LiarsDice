@@ -40,7 +40,7 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
     }
   },[ENDPOINT, location.search])
 
-  const [users, setUsers] = useState('') //users is the array of all users in this chatroom.
+  const [users, setUsers] = useState('') //users is the array of all users in this chatroom. Not all of them are necessarily players.
   const [messageText, setMessageText] = useState('') //TYPED MESSAGE state.
   const [messages, setMessages] = useState([]) //all messages ever sent.
 
@@ -64,9 +64,22 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
     }
   }  
 
+  //useEffect: takes care of game data.
+  useEffect(()=>{
+    socket.on('gameData', (object)=>{
+      console.log(object)
+      setUsers(object.users)
+    })
+  },[users])
+  
+
+
+  //START NEW GAME
   const startGame = () =>{
-    if(users.length>1){
-      console.log("Game starting.")
+    if(users.length>1){ //since only the master can start the game, pass master's name.
+      socket.emit('startGame', {room, name}, ()=>{
+        console.log("Game starting.")
+      })
     } else {
       console.log("We need at least two players to start the game.")
     }
@@ -84,6 +97,31 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
 
           {/* Input component (typing area) needs message, setMessage, and sendMessage. */}
           <Input messageText={messageText} setMessageText={setMessageText} sendMessage={sendMessage}/>
+          
+          {/* MY TURN: OPTIONS */}
+          <div className="green lighten-1">
+            <div class="input-field">
+              <select className="browser-default green lighten-1 white-text" style={{width: "35%", display:"inline"}}>
+                <option value="" disabled selected>Call a Quantity</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+              </select>
+              <select className="browser-default green lighten-1 white-text" style={{width: "35%", display:"inline"}}>
+                <option value="" disabled selected>Dice Value</option>
+                <option value="2">Twos</option>
+                <option value="3">Threes</option>
+                <option value="4">Fours</option>
+                <option value="5">Fives</option>
+                <option value="6">Sixes</option>
+              </select>
+              <button className="btn green right">Make Call!</button>
+            </div>
+          </div>
+          <button className="btn red">Call Liar!</button>
         </div>
         {/* TextContainer currently shows all the users in the room. */}
         <TextContainer users={users} name={name} startGame={startGame}/>

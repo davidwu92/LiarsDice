@@ -1,6 +1,7 @@
 //lets create helper functions to manage users.
 //JOINING IN, SIGNING OUT, removing/adding users. Even keeping track of which users are in what rooms.
-const users = []
+let users = []
+const ongoingGames = {}
 
 //add users
 const addUser = ({id, name, room, hand, isMyTurn, isMaster}) =>{ //(id of socket instance, name of user, room name. All passed from server.)
@@ -29,10 +30,23 @@ const removeUser = (id) =>{
   } //this removes the user from that users array.
 }
 
-//get user.
+//get user for text messaging. Takes a socket.id and returns the user attached to that message.
 const getUser = (id) => users.find((user)=>user.id===id);
 
-//get users in room
+//get users in room; takes a ROOM NAME and returns array of everyone in that room.
 const getUsersInRoom = (room) => users.filter((user)=>user.room===room)
 
-module.exports = {addUser, removeUser, getUser, getUsersInRoom}
+
+//GAME FUNCTIONS
+const startGameForRoom = (room)=>{
+  users.forEach(user=>{
+    if(user.room===room){
+      user.hand=[Math.ceil(Math.random()*6),Math.ceil(Math.random()*6),Math.ceil(Math.random()*6),Math.ceil(Math.random()*6),Math.ceil(Math.random()*6)]
+      if(user.isMaster){
+        user.isMyTurn = true
+      }
+    }
+  })
+}
+
+module.exports = {addUser, removeUser, getUser, getUsersInRoom, startGameForRoom}

@@ -9,11 +9,14 @@ const InfoBar = ({room}) =>(
     <div className="leftInnerContainer">
       <img className="onlineIcon" src={onlineIcon} alt="online"/>
       {/* room name here */}
-      <h3>{room}</h3> {/* Chat.js passed the room state as Room into this component. */}
+      <h6>{room}</h6> {/* Chat.js passed the room state as Room into this component. */}
     </div>
-
+    <div className="white-text">
+      <h5>Game Not Started</h5>
+    </div>
     <div className="rightInnerContainer">
       {/* Close Icon. Clicking it will take us back to homepage. */}
+
       <a href="/"><img src={closeIcon} alt="close"/></a> 
     </div>
   </div>
