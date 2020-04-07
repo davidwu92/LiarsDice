@@ -103,20 +103,20 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
   const makeCall = (event) =>{
     event.preventDefault()
     if(roundNum == 0){  //makeCall fails: game isn't running.
-      console.log("makeCall failed: Game hasn't started.")
       toast(`The game has not started yet.`,
       {autoClose:4000, delay:0, hideProgressBar: true, type: "error"})
       return(false)
     }
     let currentPlayer = users.filter((user)=>user.isMyTurn)
-    if (currentPlayer[0].name !== name){
+    if (currentPlayer[0].name !== name){ //makeCall fails: not my turn.
       toast(`It is currently ${currentPlayer[0].name}'s turn.`,
       {autoClose:4000, delay:0, hideProgressBar: true, type: "error"})
       return(false)
     }
+
     if(myQuantity && myValue){
       if (currentCall){ //if this is NOT the first call...
-        console.log("This is not the first call.")
+        console.log("This is not the first call of the round.")
         if(myQuantity===currentCall[0] && myValue===currentCall[1]){ //error: can't make same call as previous player.
           toast("You can't make the same call as the last player.",{autoClose:4000, delay:0, hideProgressBar: true, type: "error"})
           return(false)
@@ -125,16 +125,24 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
         let call = [myQuantity, myValue] // i.e. [3, "Fives"]
         socket.emit('makeCall', {room, name, call, turnIndex}, ()=>{
           console.log(`${name} made the call: ${call[0]+" "+call[1]}`)
+          setMyQuantity(0)
+          setMyValue("")
         })
       } else { //this is the first call.
-        console.log("This is the first call.")
+        console.log("This is the first call of the round.")
+        //make the call.
         let call = [myQuantity, myValue] // i.e. [3, "Fives"]
         socket.emit('makeCall', {room, name, call, turnIndex}, ()=>{
           console.log(`${name} made the call: ${call[0]+" "+call[1]}`)
+          setMyQuantity(0)
+          setMyValue("")
         })
       }
-    } else {
-      console.log("You must call both a quantity and a value.")
+    } else { //makeCall fails: Need to choose a new quantity and value.
+      // console.log("You must call both a quantity and a value.")
+      toast(`You need to call a new quantity and value.`,
+      {autoClose:4000, delay:0, hideProgressBar: true, type: "error"})
+      return(false)
     }
   }
 
@@ -166,7 +174,7 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
 
         </div>
         {/* TextContainer currently shows all the users in the room. */}
-        <TextContainer users={users} name={name} startGame={startGame}/>
+        <TextContainer socket={socket} users={users} room={room} name={name} startGame={startGame} currentCall={currentCall} roundNum={roundNum}/>
       </div>
     </>
   )
