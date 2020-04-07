@@ -89,6 +89,11 @@ io.on('connection', (socket)=>{ //this is a socket that'll be connected as a cli
     callback()
   })
 
+  //SOMEONE CALLS LIAR; ends round, starts new round.
+  //1. Declare a round winner and a round loser. Loser loses a die AND starts next round.
+  //2. Start next round; clear out the currentCall, determine turnIndex, pass in users:getUsersInRoom(room)
+
+
   //DISCONNECT FROM ROOM (leave room.)
   socket.on('disconnect', ()=>{ //Somebody is disconnecting.
     console.log("User has left the socket.")

@@ -138,6 +138,9 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
     }
   }
 
+  //MY TURN FUNCTION: Call Liar!
+//code code code
+
   const testButton = () =>{
     console.log("current call: "+currentCall)
     console.log("turnIndex: "+turnIndex)

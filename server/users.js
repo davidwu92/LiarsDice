@@ -1,7 +1,6 @@
 //lets create helper functions to manage users.
 //JOINING IN, SIGNING OUT, removing/adding users, users' hands, etc.
 let users = []
-const ongoingGames = {}
 
 //ADD A USER to socket. Each user is in a room specified in Join.js; starts off with...
 // hand: false, isMyTurn: false, isMaster: false, roundsLost: 0, roundsWon: 0.
