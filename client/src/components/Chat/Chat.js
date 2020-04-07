@@ -24,6 +24,7 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
 
   //this useEffect is for a user joining. It'll run whenever theres a change to ENDPOINT or the url.
   useEffect(()=>{
+    console.log("User Joined useEffect triggering.")
     const {name, room} = queryString.parse(location.search) //grab Name and Room from the url (which was created in Join.js)
     socket = io(ENDPOINT)
     setName(name)
@@ -59,7 +60,7 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
       console.log("roomData useEffect triggered.")
       setUsers(users)
     })
-  },[]) //DON'T want to run this useEffect 10 billion times. 
+  },[])
 
   //function for sending TEXT messages; this is not a game action.
   const sendMessage = (event)=>{
@@ -113,28 +114,32 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
       {autoClose:4000, delay:0, hideProgressBar: true, type: "error"})
       return(false)
     }
-    if (currentCall){ //if this is NOT the first call...
-      console.log("This is not the first call.")
-      if(myQuantity===currentCall[0] && myValue===currentCall[1]){ //error: can't make same call as previous player.
-        toast("You can't make the same call as the last player.",{autoClose:4000, delay:0, hideProgressBar: true, type: "error"})
-        return(false)
-      }
-      if(myQuantity && myValue){
+    if(myQuantity && myValue){
+      if (currentCall){ //if this is NOT the first call...
+        console.log("This is not the first call.")
+        if(myQuantity===currentCall[0] && myValue===currentCall[1]){ //error: can't make same call as previous player.
+          toast("You can't make the same call as the last player.",{autoClose:4000, delay:0, hideProgressBar: true, type: "error"})
+          return(false)
+        }
+        //make the call.
+        let call = [myQuantity, myValue] // i.e. [3, "Fives"]
+        socket.emit('makeCall', {room, name, call, turnIndex}, ()=>{
+          console.log(`${name} made the call: ${call[0]+" "+call[1]}`)
+        })
+      } else { //this is the first call.
+        console.log("This is the first call.")
         let call = [myQuantity, myValue] // i.e. [3, "Fives"]
         socket.emit('makeCall', {room, name, call, turnIndex}, ()=>{
           console.log(`${name} made the call: ${call[0]+" "+call[1]}`)
         })
       }
-    } else { //this is the first call.
-        console.log("This is the first call.")
-        if(myQuantity && myValue){
-          let call = [myQuantity, myValue] // i.e. [3, "Fives"]
-          socket.emit('makeCall', {room, name, call, turnIndex}, ()=>{
-            console.log(`${name} made the call: ${call[0]+" "+call[1]}`)
-          })
-        }
+    } else {
+      console.log("You must call both a quantity and a value.")
     }
   }
+
+  //MY TURN FUNCTION: Call Liar!
+//code code code
 
   const testButton = () =>{
     console.log("current call: "+currentCall)
