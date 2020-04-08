@@ -76,6 +76,12 @@ io.on('connection', (socket)=>{ //this is a socket that'll be connected as a cli
     callback()
   })
 
+  //PEEK AT MY HAND
+  socket.on("peekHand", ({name, room}, callback)=>{
+    io.to(room).emit('message',{user: name, text:`*peeks at hand.`, isGameAction: true}) 
+    callback()
+  })
+
   //MAKE A CALL
   socket.on('makeCall', ({room, name, call, turnIndex}, callback)=>{
     console.log(`${name} made the call: ${call}`) //call: [2, 'Fives']
