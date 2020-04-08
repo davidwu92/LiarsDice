@@ -77,12 +77,14 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
   const [currentCall, setCurrentCall] = useState([]) //i.e. [2, "threes"]
   const [turnIndex, setTurnIndex] = useState(-1) //use this number to track who's turn it is; -1 if game not started.
   const [roundNum, setRoundNum] = useState(0) //use this to track what round we're at; 0 if game not started.
+  const [previousPlayer, setPreviousPlayer] = useState("") 
   useEffect(()=>{
     socket.on('gameData', (game)=>{
       setUsers(game.users)
       setTurnIndex(game.turnIndex)
       setRoundNum(game.setRoundNum)
       setCurrentCall(game.currentCall)
+      setPreviousPlayer(game.previousPlayer)
       console.log('gameData useEffect has triggered.')
     })
   },[])
@@ -115,7 +117,7 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
       return(false)
     }
     if(myQuantity && myValue){
-      if (currentCall){ //if this is NOT the first call...
+      if (currentCall)  { //if this is NOT the first call...
         console.log("This is not the first call.")
         if(myQuantity===currentCall[0] && myValue===currentCall[1]){ //error: can't make same call as previous player.
           toast("You can't make the same call as the last player.",{autoClose:4000, delay:0, hideProgressBar: true, type: "error"})
@@ -123,12 +125,14 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
         }
         //make the call.
         let call = [myQuantity, myValue] // i.e. [3, "Fives"]
+        setPreviousPlayer(name)
         socket.emit('makeCall', {room, name, call, turnIndex}, ()=>{
           console.log(`${name} made the call: ${call[0]+" "+call[1]}`)
         })
       } else { //this is the first call.
         console.log("This is the first call.")
         let call = [myQuantity, myValue] // i.e. [3, "Fives"]
+        setPreviousPlayer(name)
         socket.emit('makeCall', {room, name, call, turnIndex}, ()=>{
           console.log(`${name} made the call: ${call[0]+" "+call[1]}`)
         })
@@ -148,6 +152,9 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
       return(false)
     }
      let currentPlayer = users.filter((user) => user.isMyTurn)
+     console.log(users)
+     console.log(currentPlayer)
+     console.log(previousPlayer)
      if (currentPlayer[0].name !== name) {
        toast(`It is currently ${currentPlayer[0].name}'s turn.`, {
          autoClose: 4000,
@@ -157,13 +164,24 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
        })
        return false
       }
+
+    
+        if (currentCall) {
+          socket.emit('callLiar', {room, name, turnIndex, previousPlayer}, () => {
+          console.log(`${name} calles ${previousPlayer} a liar`)
+         })
+        }
+        else {
+        // can not call liar on first turn
+        toast("You can't call liar on the first turn.", 
+        {autoClose:4000,delay:0,hideProgressBar:true, type:
+        "error"})
+      }
       // need to get last players name 
-      socket.emit('callLiar', {room, name, turnIndex}, () => {
-        console.log(`${name} called ${name} a liar`)
-      })
+      
 
     }
-        //  call liar
+
           
 //code code code
 

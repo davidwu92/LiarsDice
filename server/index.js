@@ -85,12 +85,12 @@ io.on('connection', (socket)=>{ //this is a socket that'll be connected as a cli
 
     //emit that call to whole room.
     io.to(room).emit('message',{user: name, text:`I call ${call[0] + " " + call[1]}.`, isGameAction: true}) 
-    io.to(room).emit('gameData', {users: getUsersInRoom(room), turnIndex: turnIndex+1, currentCall: call})
+    io.to(room).emit('gameData', {users: getUsersInRoom(room), turnIndex: turnIndex+1, currentCall: call, previousPlayer: name })
     callback()
   })
 
   //SOMEONE CALLS LIAR; ends round, starts new round.
-  socket.on('callLiar', ({ room, name, call, turnIndex}, callback) => {
+  socket.on('callLiar', ({ room, name, call, turnIndex, previousPlayer}, callback) => {
     console.log(`${name} calls ${name} a liar!`)
   })
   //1. Declare a round winner and a round loser. Loser loses a die AND starts next round.
