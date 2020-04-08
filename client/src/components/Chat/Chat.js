@@ -174,7 +174,7 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
 
         </div>
         {/* TextContainer currently shows all the users in the room. */}
-        <TextContainer socket={socket} users={users} room={room} name={name} startGame={startGame} currentCall={currentCall} roundNum={roundNum}/>
+        <TextContainer socket={socket} turnIndex={turnIndex} roundNum={roundNum} users={users} room={room} name={name} startGame={startGame} currentCall={currentCall} roundNum={roundNum}/>
       </div>
     </>
   )
