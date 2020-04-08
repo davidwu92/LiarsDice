@@ -2,18 +2,18 @@ import React, {useState} from 'react'
 import onlineIcon from '../../icons/onlineIcon.png'
 import './TextContainer.css'
 
-const TextContainer = ({socket, users, room, name, startGame, currentCall, roundNum}) => {
+const TextContainer = ({socket, turnIndex, roundNum, users, room, name, startGame, currentCall}) => {
   let masterName
-  if(users){
-    users.forEach(user=>user.isMaster ? masterName=user.name:null)
-  }
+  if(users){users.forEach(user=>user.isMaster ? masterName=user.name:null)}
   let userToPlay
-  if (users) {
-    users.forEach(user=>user.isMyTurn ? userToPlay=user.name:null)
-  }
+  if (users) {users.forEach(user=>user.isMyTurn ? userToPlay=user.name:null)}
+  
+  //showHands should be set to TRUE once callLiar() happens.
   const [showHands, setShowHands]=useState(false)
+  //showMine is true when mouseOver my own hand.
   const [showMine, setShowMine]=useState(false)
 
+  //SHOWN HAND dice array.
   const myHandArray = (hand) =>{
     let iconArray = []
     if (hand.length){
@@ -30,7 +30,7 @@ const TextContainer = ({socket, users, room, name, startGame, currentCall, round
     }
     return(iconArray)
   }
-
+  //HIDDEN HAND dice array.
   const hiddenHandArray = (hand)=>{
     let hiddenArray = []
     if (hand.length){
@@ -40,17 +40,30 @@ const TextContainer = ({socket, users, room, name, startGame, currentCall, round
     }
     return(hiddenArray)
   }
+  //mouseEnter my own hand.
   const showMyHand = (event) => {
     event.preventDefault()
-    setShowMine(true)
-    socket.emit('peekHand',{name, room},()=>{
-      console.log("You looked at your hand.")
-    })
+    if(!showHands){
+      setShowMine(true)
+      socket.emit('peekHand',{name, room},()=>{
+        console.log("You looked at your hand.")
+      })
+    }
   }
+  //mouseLeave my own hand.
   const hideMyHand = (event) => {
     event.preventDefault()
     setShowMine(false)
   }
+
+  //startNewRound button (available to Master after callLiar() triggers, ending a round.)
+  const startNewRound = (event)=>{
+    event.preventDefault()
+    socket.emit('startRound',{room, turnIndex, roundNum},()=>{
+      console.log("starting a new round.")
+    })
+  }
+
   return(
     // <div className="textContainer">
     <div className="container grey darken-4 white-text">
@@ -65,12 +78,10 @@ const TextContainer = ({socket, users, room, name, startGame, currentCall, round
             <h5 className="green-text center">
               {userToPlay ? 
               <>
-                {currentCall ? 
-                  <>It's <b>{userToPlay}'s</b> turn to make a call.{userToPlay===name?" That's you!":""}</>
-                  :<>It's <b>{userToPlay}'s</b> turn to make the call.{userToPlay===name?" That's you!":""}</>}
+                It's <b>{userToPlay}'s</b> turn to make a call.{userToPlay===name?" That's you!":""}
               </>: null}
             </h5>
-            <h6 className="purple-text text-lighten-1 center">{currentCall ? `The call to beat is ${currentCall[0]} ${currentCall[1]}.`:``}</h6>
+            <h5 className="purple-text text-lighten-1 center">{currentCall.length ? `The current call is ${currentCall[0]} ${currentCall[1]}.`:<><b>{userToPlay}</b> is making the first call.</>}</h5>
           </>
           :<>{/* Game hasn't started. */} 
               {
@@ -88,8 +99,7 @@ const TextContainer = ({socket, users, room, name, startGame, currentCall, round
       :null}
       
         {
-          users
-            ? 
+          users ? 
               <div className="indigo darken-4">
                 <h5 className="center">Users in Room</h5>
                 {roundNum===0? null:<p className="center">Hover cursor over your hand to peek at it.</p>}
@@ -113,11 +123,11 @@ const TextContainer = ({socket, users, room, name, startGame, currentCall, round
                         </div>
                     ))}
               </div>
-            
             : null
         }
       </div>
       <div><button onClick={()=>setShowHands(bool=>!bool)} className="btn red">TEST BUTTON: toggle showHands</button></div>
+      <div><button onClick={startNewRound} className="btn purple">Start New Round</button></div>
     </div>
   )
 };

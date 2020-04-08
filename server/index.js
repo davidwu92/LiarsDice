@@ -13,7 +13,7 @@ const server = http.createServer(app)
 const io = socketio(server)
 
 //Let's get helper functions from users.js; they will manage all the USER activity.
-const {addUser, removeUser, getUser, getUsersInRoom, startGameForRoom, setPlayerTurn} = require('./users.js')
+const {addUser, removeUser, getUser, getUsersInRoom, startGameForRoom, passTurn, startNewRound} = require('./users.js')
 
 //In our server, we run methods that allow us to CONNECT and DISCONNECT from socket.io.
 io.on('connection', (socket)=>{ //this is a socket that'll be connected as a client side socket.
@@ -72,7 +72,7 @@ io.on('connection', (socket)=>{ //this is a socket that'll be connected as a cli
     console.log(room + " is starting a game.")
     startGameForRoom(room)
     io.to(room).emit('message',{user:'admin', text:`${name} has started the game.`, isGameAction: true})
-    io.to(room).emit('gameData', {users: getUsersInRoom(room), turnIndex: 0, roundNum: 1})
+    io.to(room).emit('gameData', {users: getUsersInRoom(room), turnIndex: 0, roundNum: 1, currentCall:[]})
     callback()
   })
 
@@ -86,19 +86,28 @@ io.on('connection', (socket)=>{ //this is a socket that'll be connected as a cli
   socket.on('makeCall', ({room, name, call, turnIndex}, callback)=>{
     console.log(`${name} made the call: ${call}`) //call: [2, 'Fives']
     
-    //pass turn to next player.
-    setPlayerTurn(room, turnIndex)
+    //pass turn to next player THAT HAS A HAND.
+    // passTurn returns the new turnIndex as turnIndexChecker = turnIndex+1 (if the next player has a hand)
+    // or it returns turnIndexChecker = turnIndex+2 (if we need to skip someone because they don't have a hand.) 
+    let turnIndexChecker = passTurn(room, turnIndex)
 
     //emit that call to whole room.
     io.to(room).emit('message',{user: name, text:`I call ${call[0] + " " + call[1]}.`, isGameAction: true}) 
-    io.to(room).emit('gameData', {users: getUsersInRoom(room), turnIndex: turnIndex+1, currentCall: call})
+    io.to(room).emit('gameData', {users: getUsersInRoom(room), turnIndex: turnIndexChecker, currentCall: call})
     callback()
   })
 
-  //SOMEONE CALLS LIAR; ends round, starts new round.
+  //SOMEONE CALLS LIAR; ends round; triggers startRound button for master if the game hasn't ended.
   //1. Declare a round winner and a round loser. Loser loses a die AND starts next round.
   //2. Start next round; clear out the currentCall, determine turnIndex, pass in users:getUsersInRoom(room)
 
+  //START NEW ROUND: Button available to room master after callLiar().
+  socket.on("startRound", ({room, turnIndex, roundNum}, callback)=>{
+    startNewRound(room, turnIndex)
+    io.to(room).emit('message',{user: 'admin', text:`The room master has started a new round.`, isGameAction: true}) 
+    io.to(room).emit('gameData', {users: getUsersInRoom(room), turnIndex: turnIndex, roundNum: roundNum+1, currentCall:[]})
+    callback()
+  })
 
   //DISCONNECT FROM ROOM (leave room.)
   socket.on('disconnect', ()=>{ //Somebody is disconnecting.
