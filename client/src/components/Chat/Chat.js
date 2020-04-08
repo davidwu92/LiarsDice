@@ -81,7 +81,7 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
     socket.on('gameData', (game)=>{
       setUsers(game.users)
       setTurnIndex(game.turnIndex)
-      setRoundNum(game.setRoundNum)
+      setRoundNum(game.roundNum)
       setCurrentCall(game.currentCall)
       console.log('gameData useEffect has triggered.')
     })
@@ -123,7 +123,7 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
         }
         //make the call.
         let call = [myQuantity, myValue] // i.e. [3, "Fives"]
-        socket.emit('makeCall', {room, name, call, turnIndex}, ()=>{
+        socket.emit('makeCall', {room, name, call, roundNum, turnIndex}, ()=>{
           console.log(`${name} made the call: ${call[0]+" "+call[1]}`)
           setMyQuantity(0)
           setMyValue("")
@@ -160,7 +160,7 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
         <button onClick={testButton}>console.log currentCall and turnIndex</button>
         <div className="container">
           {/* We need to pass off our ROOM property to the infobar! */}
-          <InfoBar room={room}/> 
+          <InfoBar room={room} roundNum={roundNum}/> 
 
           {/* Messages. Shows all past messages. */}
           <Messages messages={messages} name={name}/>

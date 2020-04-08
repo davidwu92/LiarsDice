@@ -72,7 +72,7 @@ const passTurn = (room, turnIndex) =>{ //CHANGE WHOSE TURN IT IS. Checks if the 
 const startNewRound = (room, turnIndex) =>{
   if(users){
     let players = users.filter((user)=>user.room===room)
-    let nextPlayer = players[turnIndex].name
+    let nextPlayer = players[turnIndex%players.length].name
 
     users.forEach(user=>{
       if(user.room===room){

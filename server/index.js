@@ -83,7 +83,7 @@ io.on('connection', (socket)=>{ //this is a socket that'll be connected as a cli
   })
 
   //MAKE A CALL
-  socket.on('makeCall', ({room, name, call, turnIndex}, callback)=>{
+  socket.on('makeCall', ({room, name, call, roundNum, turnIndex}, callback)=>{
     console.log(`${name} made the call: ${call}`) //call: [2, 'Fives']
     
     //pass turn to next player THAT HAS A HAND.
@@ -93,7 +93,7 @@ io.on('connection', (socket)=>{ //this is a socket that'll be connected as a cli
 
     //emit that call to whole room.
     io.to(room).emit('message',{user: name, text:`I call ${call[0] + " " + call[1]}.`, isGameAction: true}) 
-    io.to(room).emit('gameData', {users: getUsersInRoom(room), turnIndex: turnIndexChecker, currentCall: call})
+    io.to(room).emit('gameData', {users: getUsersInRoom(room), turnIndex: turnIndexChecker, currentCall: call, roundNum:roundNum})
     callback()
   })
 
