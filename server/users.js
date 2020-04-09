@@ -87,8 +87,8 @@ const endRound = (room, name, previousPlayer, turnIndex, currentCall) =>{
   //this function will return object with all the round results and an updated turnIndex.
   if(users){
     let roundResults = {turnIndex: 0, numberOfCalledValue:0, roundWinner: "", roundLoser:"", loserEliminated:false, gameEnded:false}
-    let players = users.filter((user)=>user.room===room)
-    
+    let players = users.filter((user)=>user.room===room&&user.hand)
+
     //determine true number of calledValue (if the call was 5 Sixes, we find the total number of 1's and 6's.)
     let numberOfCalledValue = 0
     switch(currentCall[1]){
@@ -206,11 +206,11 @@ const endRound = (room, name, previousPlayer, turnIndex, currentCall) =>{
 
 const startNewRound = (room, turnIndex) =>{
   if(users){
-    let players = users.filter((user)=>user.room===room)
+    let players = users.filter((user)=>user.room===room&&user.hand)
     let nextPlayer = players[turnIndex%players.length].name
 
     users.forEach(user=>{
-      if(user.room===room){
+      if(user.room===room && user.hand){
         //set everyone's isMyTurn to false except for nextPlayer.
         if(user.name===nextPlayer){user.isMyTurn=true} else {user.isMyTurn=false}
         
