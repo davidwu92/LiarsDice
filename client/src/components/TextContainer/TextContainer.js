@@ -48,7 +48,7 @@ const TextContainer = ({showHands, setShowHands, socket, turnIndex, roundNum, us
     if(!showHands){
       setShowMine(true)
       socket.emit('peekHand',{name, room},()=>{
-        console.log("You looked at your hand.")
+        // console.log("You looked at your hand.")
       })
     }
   }
