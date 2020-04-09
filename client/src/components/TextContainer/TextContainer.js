@@ -1,17 +1,17 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import onlineIcon from '../../icons/onlineIcon.png'
 import './TextContainer.css'
 
-const TextContainer = ({socket, turnIndex, roundNum, users, room, name, startGame, currentCall}) => {
+const TextContainer = ({showHands, setShowHands, socket, turnIndex, roundNum, users, room, name, startGame, currentCall}) => {
   let masterName
   if(users){users.forEach(user=>user.isMaster ? masterName=user.name:null)}
   let userToPlay
   if (users) {users.forEach(user=>user.isMyTurn ? userToPlay=user.name:null)}
   
-  //showHands should be set to TRUE once callLiar() happens.
-  const [showHands, setShowHands]=useState(false)
+
   //showMine is true when mouseOver my own hand.
   const [showMine, setShowMine]=useState(false)
+  //useEffect: setting a listener for revealHands.
 
   //SHOWN HAND dice array.
   const myHandArray = (hand) =>{
@@ -30,6 +30,7 @@ const TextContainer = ({socket, turnIndex, roundNum, users, room, name, startGam
     }
     return(iconArray)
   }
+
   //HIDDEN HAND dice array.
   const hiddenHandArray = (hand)=>{
     let hiddenArray = []
@@ -40,6 +41,7 @@ const TextContainer = ({socket, turnIndex, roundNum, users, room, name, startGam
     }
     return(hiddenArray)
   }
+
   //mouseEnter my own hand.
   const showMyHand = (event) => {
     event.preventDefault()
@@ -94,9 +96,6 @@ const TextContainer = ({socket, turnIndex, roundNum, users, room, name, startGam
         }
       
       {/* START/NEW GAME button for master. */}     
-      {name==masterName ?
-      <div className="center"><button className={"btn waves-effect purple"} onClick={startGame}>{roundNum===0?"START":"NEW GAME"}</button></div>
-      :null}
       
         {
           users ? 
@@ -126,8 +125,16 @@ const TextContainer = ({socket, turnIndex, roundNum, users, room, name, startGam
             : null
         }
       </div>
-      <div><button onClick={()=>setShowHands(bool=>!bool)} className="btn red">TEST BUTTON: toggle showHands</button></div>
-      <div><button onClick={startNewRound} className="btn purple">Start New Round</button></div>
+      {/* <div><button onClick={()=>setShowHands(bool=>!bool)} className="btn red">TEST BUTTON: toggle showHands</button></div> */}
+      <div className="row center" style={{width:"100%"}}>
+        {name==masterName ?
+          <>
+            {showHands ? <div className="col s6 m6 l6"><button onClick={startNewRound} className="btn purple">Start New Round</button></div>
+              :<div className="col s6 m6 l6"><button onClick={startNewRound} className="btn disabled">Start New Round</button></div>}
+            <div className="col s6 m6 l6"><button className={"btn waves-effect purple"} onClick={startGame}>{roundNum===0?"START GAME":"NEW GAME"}</button></div>
+          </>
+        :null}
+      </div>
     </div>
   )
 };
