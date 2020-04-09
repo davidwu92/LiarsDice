@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react'
 
-const TurnOptions = ({roundNum, users, currentCall, myQuantity, setMyQuantity, myValue, setMyValue, makeCall, callLiar}) => {
+const TurnOptions = ({roundNum, users, name, currentCall, myQuantity, setMyQuantity, myValue, setMyValue, makeCall, callLiar}) => {
   const [quantities, setQuantities] = useState([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20])
   const [values, setValues] = useState(["Two", "Three", "Four", "Five", "Six"])
   
@@ -22,11 +22,14 @@ const TurnOptions = ({roundNum, users, currentCall, myQuantity, setMyQuantity, m
     setQuantities(possibleQuantities)
   }, [roundNum])
 
+  let userToPlay
+  if (users) {users.forEach(user=>user.isMyTurn ? userToPlay=user.name:null)}
+
   return(
     <>
-      <div className="green lighten-1">
+      <div className={userToPlay===name ? "green lighten-1" : "green lighten-2"}>
         <div class="input-field">
-          <select className="browser-default green lighten-1 white-text" 
+          <select className={userToPlay===name ? "browser-default green lighten-1 white-text":"browser-default green lighten-2 white-text"} 
                   style={{width: "35%", display:"inline"}}
                   onChange={(event)=> {setMyQuantity(JSON.parse(event.target.value))}}>
             <option value={0} disabled selected>Call a Quantity</option>
@@ -39,7 +42,7 @@ const TurnOptions = ({roundNum, users, currentCall, myQuantity, setMyQuantity, m
             }
           </select>
           <span> </span>
-          <select className="browser-default green lighten-1 white-text"
+          <select className={userToPlay===name ? "browser-default green lighten-1 white-text":"browser-default green lighten-2 white-text"}
                   style={{width: "35%", display:"inline"}}
                   onChange={(event)=> setMyValue(event.target.value)}>
             <option value="" disabled selected>Dice Value</option>
@@ -58,10 +61,10 @@ const TurnOptions = ({roundNum, users, currentCall, myQuantity, setMyQuantity, m
             <option value={"Fives"}>Fives</option>
             <option value={"Sixes"}>Sixes</option> */}
           </select>
-          <button className="btn green darken-1 right" onClick={makeCall}>Make Call!</button>
+          <button className={userToPlay===name ? "btn green darken-1 right" : "btn green lighten-1 right"} onClick={makeCall}>Make Call!</button>
         </div>
       </div>
-      <button className="btn red darken-1" onClick={callLiar}>Call Liar!</button>
+      <button className={userToPlay===name ? "btn red darken-1":"btn red lighten-3"} onClick={callLiar}>Call Liar!</button>
     </>
   )
 }

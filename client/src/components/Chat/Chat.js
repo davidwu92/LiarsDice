@@ -208,7 +208,7 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
           <Input messageText={messageText} setMessageText={setMessageText} sendMessage={sendMessage}/>
           
           {/* MY TURN OPTIONS: either make a call or call liar. Still needs to check if its my turn. */}
-          <TurnOptions roundNum={roundNum} users={users} currentCall={currentCall} myQuantity={myQuantity} setMyQuantity={setMyQuantity}
+          <TurnOptions roundNum={roundNum} users={users} name={name} currentCall={currentCall} myQuantity={myQuantity} setMyQuantity={setMyQuantity}
             myValue={myValue} setMyValue={setMyValue} makeCall={makeCall} callLiar={callLiar}/>
 
         </div>
