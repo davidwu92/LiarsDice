@@ -84,7 +84,7 @@ const passTurn = (room, turnIndex) =>{ //CHANGE WHOSE TURN IT IS. Checks if the 
 }
 
 const endRound = (room, name, previousPlayer, turnIndex, currentCall) =>{
-  //This function determines winner/loser and updates turnIndex.
+  //this function will return object with all the round results and an updated turnIndex.
   if(users){
     let roundResults = {turnIndex: 0, numberOfCalledValue:0, roundWinner: "", roundLoser:"", loserEliminated:false, gameEnded:false}
     let players = users.filter((user)=>user.room===room)
