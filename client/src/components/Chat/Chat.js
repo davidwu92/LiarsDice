@@ -75,20 +75,25 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
   const [myQuantity, setMyQuantity] = useState(0) //my call: quantity.
   const [myValue, setMyValue] = useState("") //my call: Dice Value.
   const [currentCall, setCurrentCall] = useState([]) //i.e. [2, "threes"]
-  const [turnIndex, setTurnIndex] = useState(-1) //use this number to track who's turn it is; -1 if game not started.
+  const [previousPlayer, setPreviousPlayer] = useState(``) //sets the name of the previous player.
   const [roundNum, setRoundNum] = useState(0) //use this to track what round we're at; 0 if game not started.
   const [previousPlayer, setPreviousPlayer] = useState("") 
   useEffect(()=>{
     socket.on('gameData', (game)=>{
       setUsers(game.users)
-      setTurnIndex(game.turnIndex)
-      setRoundNum(game.setRoundNum)
+      setRoundNum(game.roundNum)
       setCurrentCall(game.currentCall)
       setPreviousPlayer(game.previousPlayer)
       console.log('gameData useEffect has triggered.')
     })
   },[])
-  
+  const [turnIndex, setTurnIndex] = useState(-1) //use this number to track who's turn it is; -1 if game not started.
+  useEffect(()=>{
+    socket.on('determineTurn',({newTurnIndex})=>{
+      setTurnIndex(newTurnIndex)
+    })
+  },[])
+
   //START NEW GAME
   const startGame = () =>{
     if(users.length>1){ //since only the master can start the game, pass room and master's name.
@@ -101,6 +106,7 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
     }
   }
 
+  
   //MY TURN FUNCTION: making a call.
   const makeCall = (event) =>{
     event.preventDefault()
@@ -117,81 +123,71 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
     }
 
     if(myQuantity && myValue){
-      if (currentCall){ //if this is NOT the first call...
+      if (currentCall.length){ //if this is NOT the first call...
         console.log("This is not the first call of the round.")
-        if(myQuantity===currentCall[0] && myValue===currentCall[1]){ //error: can't make same call as previous player.
-          toast("You can't make the same call as the last player.",{autoClose:4000, delay:0, hideProgressBar: true, type: "error"})
+        if(myQuantity===currentCall[0] && myValue===currentCall[1]){ //makeCall fails: can't make same call as previous player.
+          toast("You can't make the same call as the last player.",{autoClose:5000, delay:0, hideProgressBar: true, type: "error"})
           return(false)
         }
-        //make the call.
+        let dieValues = ["Two","Three","Four","Five","Six"]
+        if(myQuantity<currentCall[0]||dieValues.indexOf(myValue)<dieValues.indexOf(currentCall[1])){//makeCall fails: Neither number can go down.
+            toast("Your call can't have a lower quantity or a lower dice value. Try a new call, or call liar on the previous player!",{autoClose:5000, delay:0, hideProgressBar: true, type: "error"})
+            return(false)
+        }
         let call = [myQuantity, myValue] // i.e. [3, "Fives"]
-        setPreviousPlayer(name)
-        socket.emit('makeCall', {room, name, call, turnIndex}, ()=>{
+        socket.emit('makeCall', {room, name, call, roundNum, turnIndex}, ()=>{
           console.log(`${name} made the call: ${call[0]+" "+call[1]}`)
-          setMyQuantity(0)
-          setMyValue("")
         })
       } else { //this is the first call.
         console.log("This is the first call of the round.")
         //make the call.
         let call = [myQuantity, myValue] // i.e. [3, "Fives"]
-        setPreviousPlayer(name)
-        socket.emit('makeCall', {room, name, call, turnIndex}, ()=>{
+        socket.emit('makeCall', {room, name, call, roundNum, turnIndex}, ()=>{
           console.log(`${name} made the call: ${call[0]+" "+call[1]}`)
-          setMyQuantity(0)
-          setMyValue("")
         })
       }
-    } else { //makeCall fails: Need to choose a new quantity and value.
-      // console.log("You must call both a quantity and a value.")
-      toast(`You need to call a new quantity and value.`,
+    } else { //makeCall fails: Need to choose a quantity and value.
+      toast(`You need to call both a quantity and value.`,
       {autoClose:4000, delay:0, hideProgressBar: true, type: "error"})
       return(false)
     }
   }
 
+  //showHands should be set to TRUE once callLiar() happens.
+  const [showHands, setShowHands]=useState(false)
+  useEffect(()=>{
+    socket.on('revealHands',(object)=>{
+      setShowHands(object.revealHands)
+      console.log('revealHands useEffect has triggered.')
+    })
+  },[])
   //MY TURN FUNCTION: Call Liar!
-  const callLiar = (event) => {
+  const callLiar =(event)=>{
     event.preventDefault()
     if(roundNum == 0){  //callLiar fails: game isn't running.
-      console.log("callLiar failed: Game hasn't started.")
       toast(`The game has not started yet.`,
       {autoClose:4000, delay:0, hideProgressBar: true, type: "error"})
       return(false)
     }
-     let currentPlayer = users.filter((user) => user.isMyTurn)
-     console.log(users)
-     console.log(currentPlayer)
-     console.log(previousPlayer)
-     if (currentPlayer[0].name !== name) {
-       toast(`It is currently ${currentPlayer[0].name}'s turn.`, {
-         autoClose: 4000,
-         delay: 0,
-         hideProgressBar: true,
-         type: 'error',
-       })
-       return false
-      }
-
-    
-        if (currentCall) {
-          socket.emit('callLiar', {room, name, turnIndex, previousPlayer}, () => {
-          console.log(`${name} calles ${previousPlayer} a liar`)
-         })
-        }
-        else {
-        // can not call liar on first turn
-        toast("You can't call liar on the first turn.", 
-        {autoClose:4000,delay:0,hideProgressBar:true, type:
-        "error"})
-      }
-      // need to get last players name 
-      
-
+    let currentPlayer = users.filter((user)=>user.isMyTurn)
+    if (currentPlayer[0].name !== name){ //callLiar fails: not my turn.
+      toast(`It is currently ${currentPlayer[0].name}'s turn.`,
+      {autoClose:4000, delay:0, hideProgressBar: true, type: "error"})
+      return(false)
     }
-
-          
-//code code code
+    if (currentCall.length){ //there IS a current call.
+      console.log(`Calling liar on the previous player.`)
+      socket.emit('callLiar', {room, name, roundNum, turnIndex, previousPlayer, currentCall}, ()=>{
+        console.log(`You called liar on ${previousPlayer}!`)
+        setMyQuantity(0)
+        setMyValue("")
+      })
+    } else { //callLiar fails: there's no current call.
+      toast(`You can't call liar if there's no current call to beat!`,
+      {autoClose:4000, delay:0, hideProgressBar: true, type: "error"})
+      return(false)
+    }
+  }
 
   const testButton = () =>{
     console.log("current call: "+currentCall)
@@ -204,7 +200,7 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
         <button onClick={testButton}>console.log currentCall and turnIndex</button>
         <div className="container">
           {/* We need to pass off our ROOM property to the infobar! */}
-          <InfoBar room={room}/> 
+          <InfoBar room={room} roundNum={roundNum}/> 
 
           {/* Messages. Shows all past messages. */}
           <Messages messages={messages} name={name}/>
@@ -218,7 +214,7 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
 
         </div>
         {/* TextContainer currently shows all the users in the room. */}
-        <TextContainer socket={socket} users={users} room={room} name={name} startGame={startGame} currentCall={currentCall} roundNum={roundNum}/>
+        <TextContainer showHands={showHands} setShowHands={setShowHands} socket={socket} turnIndex={turnIndex} roundNum={roundNum} users={users} room={room} name={name} startGame={startGame} currentCall={currentCall} roundNum={roundNum}/>
       </div>
     </>
   )

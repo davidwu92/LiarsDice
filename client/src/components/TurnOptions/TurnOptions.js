@@ -1,8 +1,8 @@
 import React, {useState, useEffect} from 'react'
 
 const TurnOptions = ({currentCall, myQuantity, setMyQuantity, myValue, setMyValue, makeCall, callLiar}) => {
-  const [quantities, setQuantities] = useState([2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20])
-  const [values, setValues] = useState(["Twos", "Threes", "Fours", "Fives", "Sixes"])
+  const [quantities, setQuantities] = useState([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20])
+  const [values, setValues] = useState(["Two", "Three", "Four", "Five", "Six"])
 
   return(
     <>

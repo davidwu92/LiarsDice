@@ -1,19 +1,19 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import onlineIcon from '../../icons/onlineIcon.png'
 import './TextContainer.css'
 
-const TextContainer = ({socket, users, room, name, startGame, currentCall, roundNum}) => {
+const TextContainer = ({showHands, setShowHands, socket, turnIndex, roundNum, users, room, name, startGame, currentCall}) => {
   let masterName
-  if(users){
-    users.forEach(user=>user.isMaster ? masterName=user.name:null)
-  }
+  if(users){users.forEach(user=>user.isMaster ? masterName=user.name:null)}
   let userToPlay
-  if (users) {
-    users.forEach(user=>user.isMyTurn ? userToPlay=user.name:null)
-  }
-  const [showHands, setShowHands]=useState(false)
-  const [showMine, setShowMine]=useState(false)
+  if (users) {users.forEach(user=>user.isMyTurn ? userToPlay=user.name:null)}
+  
 
+  //showMine is true when mouseOver my own hand.
+  const [showMine, setShowMine]=useState(false)
+  //useEffect: setting a listener for revealHands.
+
+  //SHOWN HAND dice array.
   const myHandArray = (hand) =>{
     let iconArray = []
     if (hand.length){
@@ -31,6 +31,7 @@ const TextContainer = ({socket, users, room, name, startGame, currentCall, round
     return(iconArray)
   }
 
+  //HIDDEN HAND dice array.
   const hiddenHandArray = (hand)=>{
     let hiddenArray = []
     if (hand.length){
@@ -40,17 +41,31 @@ const TextContainer = ({socket, users, room, name, startGame, currentCall, round
     }
     return(hiddenArray)
   }
+
+  //mouseEnter my own hand.
   const showMyHand = (event) => {
     event.preventDefault()
-    setShowMine(true)
-    socket.emit('peekHand',{name, room},()=>{
-      console.log("You looked at your hand.")
-    })
+    if(!showHands){
+      setShowMine(true)
+      socket.emit('peekHand',{name, room},()=>{
+        console.log("You looked at your hand.")
+      })
+    }
   }
+  //mouseLeave my own hand.
   const hideMyHand = (event) => {
     event.preventDefault()
     setShowMine(false)
   }
+
+  //startNewRound button (available to Master after callLiar() triggers, ending a round.)
+  const startNewRound = (event)=>{
+    event.preventDefault()
+    socket.emit('startRound',{room, turnIndex, roundNum},()=>{
+      console.log("starting a new round.")
+    })
+  }
+
   return(
     // <div className="textContainer">
     <div className="container grey darken-4 white-text">
@@ -65,12 +80,10 @@ const TextContainer = ({socket, users, room, name, startGame, currentCall, round
             <h5 className="green-text center">
               {userToPlay ? 
               <>
-                {currentCall ? 
-                  <>It's <b>{userToPlay}'s</b> turn to make a call.{userToPlay===name?" That's you!":""}</>
-                  :<>It's <b>{userToPlay}'s</b> turn to make the call.{userToPlay===name?" That's you!":""}</>}
+                It's <b>{userToPlay}'s</b> turn to make a call.{userToPlay===name?" That's you!":""}
               </>: null}
             </h5>
-            <h6 className="purple-text text-lighten-1 center">{currentCall ? `The call to beat is ${currentCall[0]} ${currentCall[1]}.`:``}</h6>
+            <h5 className="purple-text text-lighten-1 center">{currentCall.length ? `The current call is ${currentCall[0]} ${currentCall[1]}.`:<><b>{userToPlay}</b> is making the first call.</>}</h5>
           </>
           :<>{/* Game hasn't started. */} 
               {
@@ -83,13 +96,9 @@ const TextContainer = ({socket, users, room, name, startGame, currentCall, round
         }
       
       {/* START/NEW GAME button for master. */}     
-      {name==masterName ?
-      <div className="center"><button className={"btn waves-effect purple"} onClick={startGame}>{roundNum===0?"START":"NEW GAME"}</button></div>
-      :null}
       
         {
-          users
-            ? 
+          users ? 
               <div className="indigo darken-4">
                 <h5 className="center">Users in Room</h5>
                 {roundNum===0? null:<p className="center">Hover cursor over your hand to peek at it.</p>}
@@ -113,11 +122,19 @@ const TextContainer = ({socket, users, room, name, startGame, currentCall, round
                         </div>
                     ))}
               </div>
-            
             : null
         }
       </div>
-      <div><button onClick={()=>setShowHands(bool=>!bool)} className="btn red">TEST BUTTON: toggle showHands</button></div>
+      {/* <div><button onClick={()=>setShowHands(bool=>!bool)} className="btn red">TEST BUTTON: toggle showHands</button></div> */}
+      <div className="row center" style={{width:"100%"}}>
+        {name==masterName ?
+          <>
+            {showHands ? <div className="col s6 m6 l6"><button onClick={startNewRound} className="btn purple">Start New Round</button></div>
+              :<div className="col s6 m6 l6"><button onClick={startNewRound} className="btn disabled">Start New Round</button></div>}
+            <div className="col s6 m6 l6"><button className={"btn waves-effect purple"} onClick={startGame}>{roundNum===0?"START GAME":"NEW GAME"}</button></div>
+          </>
+        :null}
+      </div>
     </div>
   )
 };

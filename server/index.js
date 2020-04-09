@@ -13,7 +13,7 @@ const server = http.createServer(app)
 const io = socketio(server)
 
 //Let's get helper functions from users.js; they will manage all the USER activity.
-const {addUser, removeUser, getUser, getUsersInRoom, startGameForRoom, setPlayerTurn} = require('./users.js')
+const {addUser, removeUser, chooseNewMaster, getUser, getUsersInRoom, startGameForRoom, passTurn,  endRound, startNewRound} = require('./users.js')
 
 //In our server, we run methods that allow us to CONNECT and DISCONNECT from socket.io.
 io.on('connection', (socket)=>{ //this is a socket that'll be connected as a client side socket.
@@ -44,7 +44,7 @@ io.on('connection', (socket)=>{ //this is a socket that'll be connected as a cli
       if (error) return callback(error) //this callback is handled if there's an error. We defined this error as "Username is taken" in users.js.
       
       //If no errors, admin emits a welcome message JUST TO the user.
-      socket.emit('message',{user:'admin', text:`Hi ${user.name}! You have been made master of the room "${user.room}".`, isGameAction: false})
+      socket.emit('message',{user:'admin', text:`Hi ${user.name}! You have been made the room master of ${user.room}.`, isGameAction: false})
       // socket.emit('message',{user:'admin', text:`${user.name} joins the room "${user.room}". ID=${user.id}. Hand=${user.hand}. isMyTurn=${user.isMyTurn}.`, isGameAction: false})
   
       //This socket method: Join; this joins a user into a room. Simple.
@@ -72,7 +72,9 @@ io.on('connection', (socket)=>{ //this is a socket that'll be connected as a cli
     console.log(room + " is starting a game.")
     startGameForRoom(room)
     io.to(room).emit('message',{user:'admin', text:`${name} has started the game.`, isGameAction: true})
-    io.to(room).emit('gameData', {users: getUsersInRoom(room), turnIndex: 0, roundNum: 1})
+    io.to(room).emit('gameData', {users: getUsersInRoom(room), roundNum: 1, currentCall:[], previousPlayer:''})
+    io.to(room).emit('determineTurn', {newTurnIndex:0})
+    io.to(room).emit('revealHands', {revealHands:false})
     callback()
   })
 
@@ -83,34 +85,80 @@ io.on('connection', (socket)=>{ //this is a socket that'll be connected as a cli
   })
 
   //MAKE A CALL
-  socket.on('makeCall', ({room, name, call, turnIndex}, callback)=>{
+  socket.on('makeCall', ({room, name, call, roundNum, turnIndex}, callback)=>{
     console.log(`${name} made the call: ${call}`) //call: [2, 'Fives']
     
-    //pass turn to next player.
-    setPlayerTurn(room, turnIndex)
+    //pass turn to next player THAT HAS A HAND.
+    // passTurn returns the new turnIndex as turnIndexChecker = turnIndex+1 (if the next player has a hand)
+    // or it returns turnIndexChecker = turnIndex+2 (if we need to skip someone because they don't have a hand.) 
+    let turnIndexChecker = passTurn(room, turnIndex)
 
     //emit that call to whole room.
-    io.to(room).emit('message',{user: name, text:`I call ${call[0] + " " + call[1]}.`, isGameAction: true}) 
-    io.to(room).emit('gameData', {users: getUsersInRoom(room), turnIndex: turnIndex+1, currentCall: call, previousPlayer: name })
+    call[0]>1 ?
+      io.to(room).emit('message',{user: name, text:`I call ${call[0] + " " + call[1]}'s.`, isGameAction: true}) 
+      :io.to(room).emit('message',{user: name, text:`I call ${call[0] + " " + call[1]}.`, isGameAction: true}) 
+    io.to(room).emit('gameData', {users: getUsersInRoom(room), currentCall: call, previousPlayer: name, roundNum})
+    io.to(room).emit('determineTurn', {newTurnIndex:turnIndexChecker})
     callback()
   })
 
-  //SOMEONE CALLS LIAR; ends round, starts new round.
-  socket.on('callLiar', ({ room, name, call, turnIndex, previousPlayer}, callback) => {
-    console.log(`${name} calls ${name} a liar!`)
+  //SOMEONE CALLS LIAR
+  socket.on('callLiar', ({room, name, roundNum, turnIndex, previousPlayer, currentCall}, callback)=>{
+    console.log(`${name} calls liar on ${previousPlayer}!`)
+    //emit message: {name} calls liar on {previousPlayer}; hands are being revealed!
+    io.to(room).emit('message',{user: name, text:`I call liar on ${previousPlayer}!`, isGameAction: true})
+    io.to(room).emit('revealHands', {revealHands:true})
+    
+    //determine round winner/loser; tick up roundsWon and roundsLost.    
+    let roundResults = endRound(room, name, previousPlayer, turnIndex, currentCall)
+    //roundResults object has {turnIndex, numberOfCalledValue, roundWinner, roundLoser, gameEnded}
+    
+    io.to(room).emit('determineTurn', {newTurnIndex: roundResults.turnIndex})
+    
+    if(roundResults.gameEnded){ //game ended.
+      roundResults.numberOfCalledValue===1 ?
+        io.to(room).emit('message', {user:"admin", text:`There was only 1 ${currentCall[1]}! ${roundResults.roundLoser} ran out of die and has been eliminated. ${roundResults.roundWinner} wins the game!`, isGameAction:true})
+        :io.to(room).emit('message', {user:"admin", text:`There were ${roundResults.numberOfCalledValue} ${currentCall[1]}'s! ${roundResults.roundLoser} ran out of die and has been eliminated. ${roundResults.roundWinner} wins the game!`, isGameAction:true})
+      io.to(room).emit('message', {user:"admin", text:`The room master can start a new game!`})
+    } else { //game goes on.
+      if(roundResults.loserEliminated){
+        roundResults.numberOfCalledValue===1 ? 
+          io.to(room).emit('message', {user:"admin", text:`There was only 1 ${currentCall[1]}! ${roundResults.roundWinner} wins this round! ${roundResults.roundLoser} ran out of die and has been eliminated.`, isGameAction:true})
+          :io.to(room).emit('message', {user:"admin", text:`There were ${roundResults.numberOfCalledValue} ${currentCall[1]}'s! ${roundResults.roundWinner} wins this round! ${roundResults.roundLoser} ran out of die and has been eliminated.`, isGameAction:true})
+        io.to(room).emit('message', {user:"admin", text:`Please wait for the room master to start the next round...`})
+      } else {
+        roundResults.numberOfCalledValue===1 ? 
+          io.to(room).emit('message', {user:"admin", text:`There was only 1 ${currentCall[1]}! ${roundResults.roundWinner} wins this round! ${roundResults.roundLoser} loses one die.`, isGameAction:true})
+          :io.to(room).emit('message', {user:"admin", text:`There were ${roundResults.numberOfCalledValue} ${currentCall[1]}'s! ${roundResults.roundWinner} wins this round! ${roundResults.roundLoser} loses one die.`, isGameAction:true})
+        io.to(room).emit('message', {user:"admin", text:`Please wait for the room master to start the next round...`})
+      }
+    }
+    callback()
   })
-  //1. Declare a round winner and a round loser. Loser loses a die AND starts next round.
-  //2. Start next round; clear out the currentCall, determine turnIndex, pass in users:getUsersInRoom(room)
 
+  //START NEW ROUND: Button available to room master after callLiar().
+  socket.on("startRound", ({room, turnIndex, roundNum}, callback)=>{
+    startNewRound(room, turnIndex)
+    io.to(room).emit('revealHands', {revealHands:false})
+    io.to(room).emit('message',{user: 'admin', text:`Round ${roundNum+1} has begun!`, isGameAction: true}) 
+    io.to(room).emit('gameData', {users: getUsersInRoom(room), turnIndex: turnIndex, roundNum: roundNum+1, currentCall:[]})
+    callback()
+  })
 
   //DISCONNECT FROM ROOM (leave room.)
   socket.on('disconnect', ()=>{ //Somebody is disconnecting.
-    console.log("User has left the socket.")
-    //add logic: IF THE MASTER LEFT AND THERE ARE STILL ROOM MEMBERS, CHOOSE A NEW MASTER.
+    console.log(`User has left the socket.`)
+    
     const user = removeUser(socket.id)
     if(user){
-      io.to(user.room).emit('message', {user: "admin", text:`${user.name} has left.`})
-      io.to(user.room).emit('roomData', {room: user.room, users: getUsersInRoom(user.room)})
+      io.to(user.room).emit('message', {user: "admin", text:`${user.name} has left the room.`})
+      if(user.isMaster){
+        let newMaster = chooseNewMaster(user.name, user.room)
+        io.to(user.room).emit('message', {user: "admin", text:`${newMaster} has been made the room master.`})
+        io.to(user.room).emit('roomData', {room: user.room, users: getUsersInRoom(user.room)})
+      } else {
+        io.to(user.room).emit('roomData', {room: user.room, users: getUsersInRoom(user.room)})
+      }
     }
   })
   
