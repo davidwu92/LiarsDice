@@ -71,8 +71,7 @@ const TextContainer = ({showHands, setShowHands, socket, turnIndex, roundNum, us
     <div className="container grey darken-4 white-text">
       <div className="row" style={{margin:0}}>
         <h3 className="center">Liars' Dice <span role="img" aria-label="emoji">💬</span></h3>
-        {/* <h5>Hi {name}! You are in the room: {room}</h5> */}
-
+        
         {/* TURN INFO if game's running; GREETING if game hasn't started. */}
         {
           roundNum!==0 ? 
@@ -83,7 +82,10 @@ const TextContainer = ({showHands, setShowHands, socket, turnIndex, roundNum, us
                 It's <b>{userToPlay}'s</b> turn to make a call.{userToPlay===name?" That's you!":""}
               </>: null}
             </h5>
-            <h5 className="purple-text text-lighten-1 center">{currentCall.length ? `The current call is ${currentCall[0]} ${currentCall[1]}.`:<><b>{userToPlay}</b> is making the first call.</>}</h5>
+            <h5 className="purple-text text-lighten-1 center">
+              {currentCall.length ? `The current call is ${currentCall[0]} ${currentCall[1]}${currentCall[0]>1?`'s.`:`.`}`
+              :<><b>{userToPlay}</b> is making the first call.</>}
+            </h5>
           </>
           :<>{/* Game hasn't started. */} 
               {
