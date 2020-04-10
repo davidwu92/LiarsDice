@@ -3,6 +3,7 @@ import {BrowserRouter as Router, Route} from 'react-router-dom'
 
 import Join from './components/Join'
 import Chat from './components/Chat'
+import Visitor from './components/Visitor'
 
 
 const App = ()=>(
@@ -11,6 +12,7 @@ const App = ()=>(
     <Route path="/" exact component={Join}/>
     {/* <Route path="/" exact component={Join}/> */}
     <Route path="/chat" component={Chat}/>
+    <Route path="/visitor" component={Visitor}/>
   </Router>
 )
 

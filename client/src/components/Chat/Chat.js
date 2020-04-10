@@ -8,6 +8,7 @@ import Messages from './../Messages'
 import Input from './../Input'
 import TextContainer from './../TextContainer'
 import TurnOptions from './../TurnOptions'
+import NavBar from './../NavBar'
 
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -206,6 +207,22 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
     }
   }
 
+  // link to current room
+  const visitorLink = () => {
+    var copyLink = document.getElementById('inviteLink')
+
+    copyLink.select()
+    copyLink.setSelectionRange(0, 99999)
+
+    document.execCommand("copy")
+  }
+  // getting visitor link
+let link = window.location.href 
+let startLink = link.split('=')
+let lastLink = link.split('&')
+let finalLink = startLink[0]  + "=" + "&" + lastLink[1]
+
+
   const testButton = () =>{
     // console.log("current call: "+currentCall)
     // console.log("turnIndex: "+turnIndex)
@@ -214,6 +231,11 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
   }
   return(
     <>
+    <NavBar />
+      <div>
+        <input type="text" value={finalLink.replace("chat", "visitor")} id="inviteLink"/>
+        <button onClick={visitorLink}>Copy Link</button>
+      </div>
       <div className="outerContainer">
         {/* <button onClick={makeCall}>DUMMY CALL</button> */}
         <button onClick={testButton}>console.log currentCall and turnIndex</button>
