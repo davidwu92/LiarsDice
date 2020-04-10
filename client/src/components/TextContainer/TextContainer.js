@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from 'react'
-import onlineIcon from '../../icons/onlineIcon.png'
+import React, {useState} from 'react'
+// import onlineIcon from '../../icons/onlineIcon.png'
 import './TextContainer.css'
 
 const TextContainer = ({showHands, previousPlayer, setShowHands, socket, turnIndex, roundNum, users, room, name, startGame, currentCall}) => {
@@ -25,6 +25,7 @@ const TextContainer = ({showHands, previousPlayer, setShowHands, socket, turnInd
           case 4: iconArray.push(<><i class="fas fa-dice-four medium white-text"></i><span>  </span></>); break;
           case 5: iconArray.push(<><i class="fas fa-dice-five medium white-text"></i><span>  </span></>); break;
           case 6: iconArray.push(<><i class="fas fa-dice-six medium white-text"></i><span>  </span></>); break;
+          default: console.log("Something is wrong with your hand.")
         }
       })
     }
@@ -96,7 +97,7 @@ const TextContainer = ({showHands, previousPlayer, setShowHands, socket, turnInd
           </>
           :<>{/* Game hasn't started. */} 
               {
-                name==masterName? <>
+                name===masterName? <>
                   <h5 className="purple-text text-lighten-1 center">You've become the room master.</h5>
                   <h6 className="purple-text text-lighten-1 center">Hit start once everybody has joined!</h6>
                 </> : <><h6 className="purple-text text-lighten-1 center">Please wait until the room master starts the game...</h6></>
@@ -136,7 +137,7 @@ const TextContainer = ({showHands, previousPlayer, setShowHands, socket, turnInd
       </div>
       {/* <div><button onClick={()=>setShowHands(bool=>!bool)} className="btn red">TEST BUTTON: toggle showHands</button></div> */}
       <div className="row center" style={{width:"100%"}}>
-        {name==masterName ?
+        {name===masterName ?
           <>
             {showHands ? <div className="col s6 m6 l6"><button onClick={startNewRound} className="btn purple">Start Round {roundNum+1}</button></div>
               :<div className="col s6 m6 l6"><button onClick={startNewRound} className="btn disabled">Start Round {roundNum+1}</button></div>}
