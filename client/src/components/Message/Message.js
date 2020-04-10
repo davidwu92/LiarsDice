@@ -14,9 +14,9 @@ const Message = ({message:{user, text, isGameAction}, name}) => {
     ? ( //SENT BY MYSELF
       <div className="messageContainer justifyEnd">
         <p className="sentText pr-10">{trimmedName}</p>
-        <div className="messageBox backgroundBlue">
+        <div className="messageBox blue accent-2">
           {isGameAction ? 
-            <p className="messageText purple-text"><b>{ReactEmoji.emojify(text)}</b></p>
+            <p className="messageText purple-text text-darken-2"><i>{text}</i></p>
             : <p className="messageText colorWhite">{ReactEmoji.emojify(text)}</p>}
         </div>
       </div>
@@ -25,7 +25,7 @@ const Message = ({message:{user, text, isGameAction}, name}) => {
       <div className="messageContainer justifyStart">
         <div className={user!=="admin" ? "messageBox backgroundLight" : "messageBox orange lighten-4"}>
           {isGameAction ? 
-            <p className="messageText purple-text"><b>{ReactEmoji.emojify(text)}</b></p>
+            <p className="messageText purple-text"><i>{text}</i></p>
             : <p className="messageText colorDark">{ReactEmoji.emojify(text)}</p>}
         </div>
         <p className="sentText pl-10">{user}</p>

@@ -1,8 +1,8 @@
-import React, {useState, useEffect} from 'react'
-import onlineIcon from '../../icons/onlineIcon.png'
+import React, {useState} from 'react'
+// import onlineIcon from '../../icons/onlineIcon.png'
 import './TextContainer.css'
 
-const TextContainer = ({showHands, setShowHands, socket, turnIndex, roundNum, users, room, name, startGame, currentCall}) => {
+const TextContainer = ({showHands, previousPlayer, setShowHands, socket, turnIndex, roundNum, users, room, name, startGame, currentCall}) => {
   let masterName
   if(users){users.forEach(user=>user.isMaster ? masterName=user.name:null)}
   let userToPlay
@@ -25,6 +25,7 @@ const TextContainer = ({showHands, setShowHands, socket, turnIndex, roundNum, us
           case 4: iconArray.push(<><i class="fas fa-dice-four medium white-text"></i><span>  </span></>); break;
           case 5: iconArray.push(<><i class="fas fa-dice-five medium white-text"></i><span>  </span></>); break;
           case 6: iconArray.push(<><i class="fas fa-dice-six medium white-text"></i><span>  </span></>); break;
+          default: console.log("Something is wrong with your hand.")
         }
       })
     }
@@ -71,23 +72,32 @@ const TextContainer = ({showHands, setShowHands, socket, turnIndex, roundNum, us
     <div className="container grey darken-4 white-text">
       <div className="row" style={{margin:0}}>
         <h3 className="center">Liars' Dice <span role="img" aria-label="emoji">💬</span></h3>
-        {/* <h5>Hi {name}! You are in the room: {room}</h5> */}
 
         {/* TURN INFO if game's running; GREETING if game hasn't started. */}
         {
           roundNum!==0 ? 
           <> {/* Game is running. */}
-            <h5 className="green-text center">
-              {userToPlay ? 
-              <>
-                It's <b>{userToPlay}'s</b> turn to make a call.{userToPlay===name?" That's you!":""}
-              </>: null}
-            </h5>
-            <h5 className="purple-text text-lighten-1 center">{currentCall.length ? `The current call is ${currentCall[0]} ${currentCall[1]}.`:<><b>{userToPlay}</b> is making the first call.</>}</h5>
+            {showHands ? 
+              <>{/* End of round: hands are being shown. */}
+                <h5 className="red-text center">{userToPlay} called liar on {previousPlayer}!</h5>
+                <h6 className="purple-text text-lighten-1 center">Revealing all dice values for Round {roundNum}.</h6>
+              </>
+              :<> {/* Round not over. */}
+                <h5 className="green-text center">
+                  {userToPlay ? 
+                  <>
+                    It's <b>{userToPlay}'s</b> turn to make a call.{userToPlay===name?" That's you!":""}
+                  </>: null}
+                </h5>
+                <h5 className="purple-text text-lighten-1 center">
+                  {currentCall.length ? `The call to beat is ${currentCall[0]} ${currentCall[1]}${currentCall[0]>1?`'s.`:`.`}`
+                  :<><b>{userToPlay}</b> to make the first call for Round {roundNum}.</>}
+                </h5>
+              </>}
           </>
           :<>{/* Game hasn't started. */} 
               {
-                name==masterName? <>
+                name===masterName? <>
                   <h5 className="purple-text text-lighten-1 center">You've become the room master.</h5>
                   <h6 className="purple-text text-lighten-1 center">Hit start once everybody has joined!</h6>
                 </> : <><h6 className="purple-text text-lighten-1 center">Please wait until the room master starts the game...</h6></>
@@ -127,10 +137,10 @@ const TextContainer = ({showHands, setShowHands, socket, turnIndex, roundNum, us
       </div>
       {/* <div><button onClick={()=>setShowHands(bool=>!bool)} className="btn red">TEST BUTTON: toggle showHands</button></div> */}
       <div className="row center" style={{width:"100%"}}>
-        {name==masterName ?
+        {name===masterName ?
           <>
-            {showHands ? <div className="col s6 m6 l6"><button onClick={startNewRound} className="btn purple">Start New Round</button></div>
-              :<div className="col s6 m6 l6"><button onClick={startNewRound} className="btn disabled">Start New Round</button></div>}
+            {showHands ? <div className="col s6 m6 l6"><button onClick={startNewRound} className="btn purple">Start Round {roundNum+1}</button></div>
+              :<div className="col s6 m6 l6"><button onClick={startNewRound} className="btn disabled">Start Round {roundNum+1}</button></div>}
             <div className="col s6 m6 l6"><button className={"btn waves-effect purple"} onClick={startGame}>{roundNum===0?"START GAME":"NEW GAME"}</button></div>
           </>
         :null}
