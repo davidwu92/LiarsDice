@@ -12,11 +12,10 @@ const InfoBar = ({room, roundNum}) =>(
       <h6>{room}</h6> {/* Chat.js passed the room state as Room into this component. */}
     </div>
     <div className="white-text">
-      <h5>{roundNum ? `Round ${roundNum}`:"Game Not Started"}</h5>
+      <h6>{roundNum ? `Round ${roundNum}`:"Liars' Dice Chatbox"}</h6>
     </div>
     <div className="rightInnerContainer">
       {/* Close Icon. Clicking it will take us back to homepage. */}
-
       <a href="/"><img src={closeIcon} alt="close"/></a> 
     </div>
   </div>
