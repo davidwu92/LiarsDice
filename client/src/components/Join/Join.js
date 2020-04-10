@@ -2,14 +2,17 @@ import React, {useState} from 'react'
 import {Link} from 'react-router-dom'
 
 import './Join.css';
+import NavBar from './../NavBar'
 //currently our homepage.
 
 const Join = () =>{
   //name state, setNameState
   const [name, setName] = useState('')
   const [room, setRoom] = useState('')
+
   return(
     <>
+    <NavBar />
       <div className="joinOuterContainer">
         <div className="joinInnerContainer">
           <h1 className="joinHeading">Welcome to Liars' Dice</h1>
