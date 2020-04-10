@@ -67,10 +67,41 @@ const TextContainer = ({showHands, previousPlayer, setShowHands, socket, turnInd
     })
   }
 
+    // link to current room
+    const visitorLink = (e) => {
+      var copyLink = document.getElementById('inviteLink')
+  
+      copyLink.select()
+      copyLink.setSelectionRange(0, 99999)
+      e.target.focus()
+      document.execCommand("copy")
+    }
+      // getting visitor link
+    // let link = window.location.href 
+    // let startLink = link.split('=')
+    // let lastLink = link.split('&')
+    // let finalLink = startLink[0]  + "=" + "&" + lastLink[1]
+
   return(
     <>
+      {/* Game Messages. */}
       <div className="row" style={{margin:0}}>
-        {/* <h4 className="center">Liars' Dice <span role="img" aria-label="emoji">💬</span></h4> */}
+        {/* LINK TO FRIENDS */}
+        {/* <div className="center"><p>Share this link to room: <a>http://liars-dice-app.herokuapp.com/chatinvite</a></p></div> */}
+        <div className="row" style={{margin:0, padding:"0 1vw"}}>
+          {window.innerWidth<600 ?<></>:
+          <div className="col m4 l4 center input-field">
+            <p>Invite others to this room:</p>  
+          </div>}
+          <div className="col s11 m7 l7 input-field center">
+            <input className="blue-text text-lighten-1" style={{border:"none", textAlign:"center"}} 
+                  type="text" value={`liars-dice-app.netlify.com/visitor?room=${room}`} id="inviteLink"/>
+          </div>
+          <div className="col s1 m1 l1 input-field">
+            <button className="btn-floating btn-small pink" onClick={visitorLink}><i className="material-icons">content_copy</i></button>
+          </div>
+        </div>
+
         {/* TURN INFO if game's running; GREETING if game hasn't started. */}
         {
           roundNum!==0 ? 
@@ -107,15 +138,12 @@ const TextContainer = ({showHands, previousPlayer, setShowHands, socket, turnInd
         }
         </div>
       
-      {/* LINK TO FRIENDS */}
-      <div className="center">
-        <p>Share this link to room: <a>http://liars-dice-app.herokuapp.com/chatinvite</a></p>
-      </div>
+
       
       {/* USERS BOX */}
       <div className="row" style={{margin:0}}>
         {users ? 
-          <div className="blue accent-3" id="usersBox">
+          <div className="light-blue darken-4" id="usersBox">
             {/* START/NEW GAME button for master. */}
             {name===masterName ?
               <>
@@ -128,7 +156,7 @@ const TextContainer = ({showHands, previousPlayer, setShowHands, socket, turnInd
             
             {roundNum===0? null:
               <>
-                  <p className="center">Hover cursor or tap on your hand to peek.</p>
+                  <p className="center">Hover cursor or tap on your hand to peek at your hand.</p>
               </>
             }
                 {users.map((user, index) => (

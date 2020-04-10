@@ -207,20 +207,20 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
     }
   }
 
-  // link to current room
-  const visitorLink = () => {
-    var copyLink = document.getElementById('inviteLink')
+//   // link to current room
+//   const visitorLink = () => {
+//     var copyLink = document.getElementById('inviteLink')
 
-    copyLink.select()
-    copyLink.setSelectionRange(0, 99999)
+//     copyLink.select()
+//     copyLink.setSelectionRange(0, 99999)
 
-    document.execCommand("copy")
-  }
-  // getting visitor link
-let link = window.location.href 
-let startLink = link.split('=')
-let lastLink = link.split('&')
-let finalLink = startLink[0]  + "=" + "&" + lastLink[1]
+//     document.execCommand("copy")
+//   }
+//   // getting visitor link
+// let link = window.location.href 
+// let startLink = link.split('=')
+// let lastLink = link.split('&')
+// let finalLink = startLink[0]  + "=" + "&" + lastLink[1]
 
 
   const testButton = () =>{
@@ -232,10 +232,10 @@ let finalLink = startLink[0]  + "=" + "&" + lastLink[1]
   return(
     <>
     <NavBar />
-      <div>
+      {/* <div>
         <input type="text" value={finalLink.replace("chat", "visitor")} id="inviteLink"/>
         <button onClick={visitorLink}>Copy Link</button>
-      </div>
+      </div> */}
       <div className="row" id="chatContainer">
         {/* <button onClick={makeCall}>DUMMY CALL</button> */}
         {/* <button onClick={testButton}>console.log currentCall and turnIndex</button> */}
