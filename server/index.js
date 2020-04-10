@@ -80,7 +80,7 @@ io.on('connection', (socket)=>{ //this is a socket that'll be connected as a cli
 
   //PEEK AT MY HAND
   socket.on("peekHand", ({name, room}, callback)=>{
-    io.to(room).emit('message',{user: name, text:`*peeks at hand.`, isGameAction: true}) 
+    io.to(room).emit('message',{user: name, text:`*peeks at hand`, isGameAction: true, peek: 1}) 
     callback()
   })
 

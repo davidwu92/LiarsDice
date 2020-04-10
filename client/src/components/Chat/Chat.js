@@ -54,7 +54,25 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
   useEffect(()=>{
     socket.on('message', (message)=>{ // console.log(message)= {user: "message sender", text:"some message"}
       console.log("message useEffect triggered.")
-      setMessages(messages=>[...messages, message]) //whenever a message is sent, set messages to a new array.
+      let sender = message.user
+      setMessages((messages)=>{ //fixed messages array so multiple peeks from one user won't send multiple messages. REMOVE if it causes issues later.
+        let i = messages.length
+        if(i>2){
+          if (messages[i-1].peek&&messages[i-1].user===sender&&message.peek){
+            if (messages[i-1].text.length ===14){
+              let newMessages = JSON.parse(JSON.stringify(messages))
+              newMessages[i-1]={user: sender, text: "*peeks at hand (2)", isGameAction: true, peek: 2}
+              return(newMessages)
+            } else {
+              let peekCount = messages[i-1].peek+1
+              let newMessages = JSON.parse(JSON.stringify(messages))
+              newMessages[i-1]={user: sender, text: `*peeks at hand (${peekCount})`, isGameAction: true, peek: peekCount}
+              return(newMessages)
+            }
+          }
+        }
+        return([...messages, message])
+      }) //whenever a message is sent, set messages to a new array.
     })
     socket.on("roomData", ({users})=>{
       console.log("roomData useEffect triggered.")
@@ -109,7 +127,7 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
   //MY TURN FUNCTION: making a call.
   const makeCall = (event) =>{
     event.preventDefault()
-    if(roundNum == 0){  //makeCall fails: game isn't running.
+    if(roundNum === 0){  //makeCall fails: game isn't running.
       toast(`The game has not started yet.`,
       {autoClose:4000, delay:0, hideProgressBar: true, type: "error"})
       return(false)
@@ -189,8 +207,10 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
   }
 
   const testButton = () =>{
-    console.log("current call: "+currentCall)
-    console.log("turnIndex: "+turnIndex)
+    // console.log("current call: "+currentCall)
+    // console.log("turnIndex: "+turnIndex)
+    console.log("messages array")
+    console.log(messages)
   }
   return(
     <>
@@ -208,12 +228,12 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
           <Input messageText={messageText} setMessageText={setMessageText} sendMessage={sendMessage}/>
           
           {/* MY TURN OPTIONS: either make a call or call liar. Still needs to check if its my turn. */}
-          <TurnOptions roundNum={roundNum} users={users} currentCall={currentCall} myQuantity={myQuantity} setMyQuantity={setMyQuantity}
+          <TurnOptions roundNum={roundNum} users={users} name={name} currentCall={currentCall} myQuantity={myQuantity} setMyQuantity={setMyQuantity}
             myValue={myValue} setMyValue={setMyValue} makeCall={makeCall} callLiar={callLiar}/>
 
         </div>
         {/* TextContainer currently shows all the users in the room. */}
-        <TextContainer showHands={showHands} setShowHands={setShowHands} socket={socket} turnIndex={turnIndex} roundNum={roundNum} users={users} room={room} name={name} startGame={startGame} currentCall={currentCall} roundNum={roundNum}/>
+        <TextContainer showHands={showHands} previousPlayer={previousPlayer} setShowHands={setShowHands} socket={socket} turnIndex={turnIndex} roundNum={roundNum} users={users} room={room} name={name} startGame={startGame} currentCall={currentCall}/>
       </div>
     </>
   )
