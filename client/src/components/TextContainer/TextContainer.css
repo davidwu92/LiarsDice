@@ -1,34 +1,25 @@
-/* .textContainer {
-  display: flex;
-  flex-direction: column;
-  margin-left: 100px;
-  color: white;
-  height: 60%;
-  justify-content: space-between;
+/* #masterButtons {
+  justify-self: flex-end;
 } */
 
-/* .activeContainer {
-  display: flex;
-  align-items: center;
-  margin-bottom: 50%;
-} */
+#usersBox {
+  padding:1% 0;
+  border-style:inset;
+  border-color: grey;
+}
+/* style={{padding:"2% 0%", borderStyle:"inset", borderColor:"grey"}} */
 
-.activeItem {
-  display: flex;
-  align-items: center;
+
+/* MEDIUM SCREENS */
+@media (min-width: 601px) and (max-width: 992px) {
+  #usersBox {
+    min-height: 60vh;
+  }
 }
 
-.activeContainer img {
-  padding-left: 10px;
-}
-
-.textContainer h1 {
-  margin-bottom: 0px;
-}
-
-/* Small/Medium Screens won't show TextContainer at all, apparently. */
-@media (min-width: 320px) and (max-width: 1200px) {
-  /* .textContainer {
-    display: none;
-  } */
+/* LARGE SCREENS */
+@media (min-width: 993px) {
+  #usersBox {
+    min-height: 65vh;
+  }
 }

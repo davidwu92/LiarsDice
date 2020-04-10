@@ -236,26 +236,36 @@ let finalLink = startLink[0]  + "=" + "&" + lastLink[1]
         <input type="text" value={finalLink.replace("chat", "visitor")} id="inviteLink"/>
         <button onClick={visitorLink}>Copy Link</button>
       </div>
-      <div className="outerContainer">
+      <div className="row" id="chatContainer">
         {/* <button onClick={makeCall}>DUMMY CALL</button> */}
-        <button onClick={testButton}>console.log currentCall and turnIndex</button>
-        <div className="container">
-          {/* We need to pass off our ROOM property to the infobar! */}
-          <InfoBar room={room} roundNum={roundNum}/> 
-
-          {/* Messages. Shows all past messages. */}
-          <Messages messages={messages} name={name}/>
-
-          {/* Input component (typing area) needs message, setMessage, and sendMessage. */}
-          <Input messageText={messageText} setMessageText={setMessageText} sendMessage={sendMessage}/>
-          
-          {/* MY TURN OPTIONS: either make a call or call liar. Still needs to check if its my turn. */}
-          <TurnOptions roundNum={roundNum} users={users} name={name} currentCall={currentCall} myQuantity={myQuantity} setMyQuantity={setMyQuantity}
-            myValue={myValue} setMyValue={setMyValue} makeCall={makeCall} callLiar={callLiar}/>
-
-        </div>
+        {/* <button onClick={testButton}>console.log currentCall and turnIndex</button> */}
         {/* TextContainer currently shows all the users in the room. */}
-        <TextContainer showHands={showHands} previousPlayer={previousPlayer} setShowHands={setShowHands} socket={socket} turnIndex={turnIndex} roundNum={roundNum} users={users} room={room} name={name} startGame={startGame} currentCall={currentCall}/>
+        <div className="col s12 m6 l6">
+          <div className="purple darken-3 white-text" id="textContainer">
+            <TextContainer showHands={showHands} previousPlayer={previousPlayer} 
+                setShowHands={setShowHands} socket={socket} turnIndex={turnIndex} 
+                roundNum={roundNum} users={users} room={room} name={name} 
+                startGame={startGame} currentCall={currentCall}/>
+          </div>
+        </div>
+
+        <div className="col s12 m6 l6">
+          <div id="chatBoxContainer">
+            {/* We need to pass off our ROOM property to the infobar! */}
+            <InfoBar room={room} roundNum={roundNum}/> 
+
+            {/* Messages. Shows all past messages. */}
+            <Messages messages={messages} name={name}/>
+
+            {/* Input component (typing area) needs message, setMessage, and sendMessage. */}
+            <Input messageText={messageText} setMessageText={setMessageText} sendMessage={sendMessage}/>
+            
+            {/* MY TURN OPTIONS: either make a call or call liar. Still needs to check if its my turn. */}
+            <TurnOptions roundNum={roundNum} users={users} name={name} currentCall={currentCall} myQuantity={myQuantity} setMyQuantity={setMyQuantity}
+              myValue={myValue} setMyValue={setMyValue} makeCall={makeCall} callLiar={callLiar}/>
+          </div>
+        </div>
+      {/* </div> */}
       </div>
     </>
   )

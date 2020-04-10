@@ -19,12 +19,12 @@ const TextContainer = ({showHands, previousPlayer, setShowHands, socket, turnInd
     if (hand.length){
       hand.forEach(number=>{
         switch(number) {
-          case 1: iconArray.push(<><i class="fas fa-dice-one medium white-text"></i><span>  </span></>);break;
-          case 2: iconArray.push(<><i class="fas fa-dice-two medium white-text"></i><span>  </span></>); break;
-          case 3: iconArray.push(<><i class="fas fa-dice-three medium white-text"></i><span>  </span></>); break;
-          case 4: iconArray.push(<><i class="fas fa-dice-four medium white-text"></i><span>  </span></>); break;
-          case 5: iconArray.push(<><i class="fas fa-dice-five medium white-text"></i><span>  </span></>); break;
-          case 6: iconArray.push(<><i class="fas fa-dice-six medium white-text"></i><span>  </span></>); break;
+          case 1: iconArray.push(<><i class="fas fa-dice-one fa-3x white-text"></i><span>  </span></>);break;
+          case 2: iconArray.push(<><i class="fas fa-dice-two fa-3x white-text"></i><span>  </span></>); break;
+          case 3: iconArray.push(<><i class="fas fa-dice-three fa-3x white-text"></i><span>  </span></>); break;
+          case 4: iconArray.push(<><i class="fas fa-dice-four fa-3x white-text"></i><span>  </span></>); break;
+          case 5: iconArray.push(<><i class="fas fa-dice-five fa-3x white-text"></i><span>  </span></>); break;
+          case 6: iconArray.push(<><i class="fas fa-dice-six fa-3x white-text"></i><span>  </span></>); break;
           default: console.log("Something is wrong with your hand.")
         }
       })
@@ -37,7 +37,7 @@ const TextContainer = ({showHands, previousPlayer, setShowHands, socket, turnInd
     let hiddenArray = []
     if (hand.length){
       hand.forEach(number=>{
-        hiddenArray.push(<><i class="fas fa-dice-d6 medium grey-text"></i><span>  </span></>)
+        hiddenArray.push(<><i class="fas fa-dice-d6 fa-3x grey-text"></i><span>  </span></>)
       })
     }
     return(hiddenArray)
@@ -68,11 +68,9 @@ const TextContainer = ({showHands, previousPlayer, setShowHands, socket, turnInd
   }
 
   return(
-    // <div className="textContainer">
-    <div className="container grey darken-4 white-text">
+    <>
       <div className="row" style={{margin:0}}>
-        <h3 className="center">Liars' Dice <span role="img" aria-label="emoji">💬</span></h3>
-
+        {/* <h4 className="center">Liars' Dice <span role="img" aria-label="emoji">💬</span></h4> */}
         {/* TURN INFO if game's running; GREETING if game hasn't started. */}
         {
           roundNum!==0 ? 
@@ -80,72 +78,83 @@ const TextContainer = ({showHands, previousPlayer, setShowHands, socket, turnInd
             {showHands ? 
               <>{/* End of round: hands are being shown. */}
                 <h5 className="red-text center">{userToPlay} called liar on {previousPlayer}!</h5>
-                <h6 className="purple-text text-lighten-1 center">Revealing all dice values for Round {roundNum}.</h6>
+                <h6 className="amber-text text-darken-4 center">Revealing all dice values for Round {roundNum}.</h6>
               </>
               :<> {/* Round not over. */}
-                <h5 className="green-text center">
+                <h5 className="green-text text-darken-1 center">
                   {userToPlay ? 
                   <>
                     It's <b>{userToPlay}'s</b> turn to make a call.{userToPlay===name?" That's you!":""}
                   </>: null}
                 </h5>
-                <h5 className="purple-text text-lighten-1 center">
+                <h5 className="amber-text text-darken-4 center">
                   {currentCall.length ? `The call to beat is ${currentCall[0]} ${currentCall[1]}${currentCall[0]>1?`'s.`:`.`}`
-                  :<><b>{userToPlay}</b> to make the first call for Round {roundNum}.</>}
+                  :<>waiting for the first call for Round {roundNum}...</>}
                 </h5>
               </>}
           </>
           :<>{/* Game hasn't started. */} 
               {
                 name===masterName? <>
-                  <h5 className="purple-text text-lighten-1 center">You've become the room master.</h5>
-                  <h6 className="purple-text text-lighten-1 center">Hit start once everybody has joined!</h6>
-                </> : <><h6 className="purple-text text-lighten-1 center">Please wait until the room master starts the game...</h6></>
+                  <h5 className="amber-text text-darken-4 center">You've become the room master <span>  <i class="fas fa-chess-king"></i></span></h5>
+                  <h6 className="amber-text text-darken-4 center">Hit start once everybody has joined!</h6>
+                </> : <>
+                  <h5 className="amber-text text-darken-4 center">Welcome to Liars' Dice</h5>
+                  <h6 className="amber-text text-darken-4 center">Please wait until the room master<span>  <i class="fas fa-chess-king"></i></span> starts the game...</h6>
+                </>
               }
           </>
         }
+        </div>
       
-      {/* START/NEW GAME button for master. */}     
+      {/* LINK TO FRIENDS */}
+      <div className="center">
+        <p>Share this link to room: <a>http://liars-dice-app.herokuapp.com/chatinvite</a></p>
+      </div>
       
-        {
-          users ? 
-              <div className="indigo darken-4">
-                <h5 className="center">Users in Room</h5>
-                {roundNum===0? null:<p className="center">Hover cursor over your hand to peek at it.</p>}
-                    {users.map((user) => (
-                        <div className="row" style={{width:"100%"}}>
-                          <div key={user.name} className="col s5 m5 l5">
-                            <h6 className={user.isMyTurn ? "green-text":null}>
-                              <b>{user.name}</b>{(user.isMaster)?<span> (room master)</span>:null}
-                            </h6>
-                          </div>
-                          <div className="col s7 m7 l7">
-                            {user.name===name ?
-                                <div onMouseEnter={showMyHand} onMouseLeave={hideMyHand}>
-                                  {showMine||showHands ? myHandArray(user.hand):hiddenHandArray(user.hand)}
-                                </div>
-                                :<div>
-                                  {showHands ? myHandArray(user.hand):hiddenHandArray(user.hand)}
-                                </div>
-                            }
-                          </div>
-                        </div>
-                    ))}
-              </div>
-            : null
-        }
+      {/* USERS BOX */}
+      <div className="row" style={{margin:0}}>
+        {users ? 
+          <div className="blue accent-3" id="usersBox">
+            {/* START/NEW GAME button for master. */}
+            {name===masterName ?
+              <>
+                <div className="left" style={{marginLeft:"1%"}}><button className={"btn waves-effect amber darken-4"} onClick={startGame}>{roundNum===0?"START GAME":"NEW GAME"}</button></div>
+                {showHands ? <div className="right" style={{marginRight:"1%"}}><button onClick={startNewRound} className="btn amber darken-4">Start Round {roundNum+1}</button></div>
+                  :<div className="right" style={{marginRight:"1%"}}><button onClick={startNewRound} className="btn disabled">{roundNum!==0?<>Start Round {roundNum+1}</>:<>Next Round</>}</button></div>}
+                  <h5 className="center">Users in {room}</h5>
+              </>
+            :<h5 className="center">Users in {room}</h5>}
+            
+            {roundNum===0? null:
+              <>
+                  <p className="center">Hover cursor or tap on your hand to peek.</p>
+              </>
+            }
+                {users.map((user, index) => (
+                    <div className={index%2?"row blue lighten-1":"row blue lighten-2"} style={{margin:"0", padding:"1% 1%"}}>
+                      <div key={user.name} className="col s5 m5 l5">
+                        <h6 className={user.isMyTurn ? "green-text text-darken-3":null}>
+                          <b>{user.name}</b>{(user.isMaster)?<span>  <i class="fas fa-chess-king"></i></span>:null}
+                        </h6>
+                      </div>
+                      <div className="col s7 m7 l7 center">
+                        {user.name===name ?
+                            <div onMouseEnter={showMyHand} onMouseLeave={hideMyHand}>
+                              {showMine||showHands ? myHandArray(user.hand):hiddenHandArray(user.hand)}
+                            </div>
+                            :<div>
+                              {showHands ? myHandArray(user.hand):hiddenHandArray(user.hand)}
+                            </div>
+                        }
+                      </div>
+                    </div>
+                  ))}
+          </div>
+        : null}
       </div>
       {/* <div><button onClick={()=>setShowHands(bool=>!bool)} className="btn red">TEST BUTTON: toggle showHands</button></div> */}
-      <div className="row center" style={{width:"100%"}}>
-        {name===masterName ?
-          <>
-            {showHands ? <div className="col s6 m6 l6"><button onClick={startNewRound} className="btn purple">Start Round {roundNum+1}</button></div>
-              :<div className="col s6 m6 l6"><button onClick={startNewRound} className="btn disabled">Start Round {roundNum+1}</button></div>}
-            <div className="col s6 m6 l6"><button className={"btn waves-effect purple"} onClick={startGame}>{roundNum===0?"START GAME":"NEW GAME"}</button></div>
-          </>
-        :null}
-      </div>
-    </div>
+    </>
   )
 };
 
