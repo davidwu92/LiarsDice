@@ -13,7 +13,7 @@ const Visitor = ({location}) => {
   const [playersInRoom, setPlayersInRoom] = useState([])
 
   // const ENDPOINT = 'http://localhost:5000'
-  const ENDPOINT = 'http://liars-dice-app.herokuapp.com'
+  const ENDPOINT = 'https://liars-dice-app.herokuapp.com'
   
   let visitLink = window.location.href
   let startLink = visitLink.split('=')
