@@ -22,6 +22,7 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
   const [room, setRoom] = useState('') //same with room.
   
   const ENDPOINT = 'http://localhost:5000'
+  // const ENDPOINT = 'http://liars-dice-app.netlify.com'
 
   //this useEffect is for a user joining. It'll run whenever theres a change to ENDPOINT or the url.
   useEffect(()=>{

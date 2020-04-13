@@ -11,7 +11,7 @@ const About = () => {
         <div className="col s10 m10 l10 offset-s1 offset-m1 offset-l1 center">
           <h5>This application was created by David Wu and Paul Jung using React and Socket.io.</h5>
           <h5>This app was our first project using socket.io to create a live chat game application. We had a lot of fun building this game, and hope you have fun playing this game with your friends!</h5>
-          <h6>You can see more of our coding/web development projects or contact us using the links provided below.</h6>
+          <h6>You can see more of our coding/web development projects or contact us through the links provided below.</h6>
         </div>
         <div className="row"> </div>
         <div className="col s5 m5 l5 offset-s1 offset-m1 offset-l1 center">
