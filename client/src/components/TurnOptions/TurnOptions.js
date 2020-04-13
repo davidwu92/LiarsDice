@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react'
+import './TurnOptions.css'
 
 const TurnOptions = ({roundNum, users, name, currentCall, myQuantity, setMyQuantity, myValue, setMyValue, makeCall, callLiar}) => {
   const [quantities, setQuantities] = useState([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20])
@@ -27,42 +28,42 @@ const TurnOptions = ({roundNum, users, name, currentCall, myQuantity, setMyQuant
 
   return(
     <>
-      <div className={userToPlay===name ? "green lighten-1" : "green lighten-2"}>
-        <div class="input-field">
-          <select className={userToPlay===name ? "browser-default green lighten-1 white-text":"browser-default green lighten-2 white-text"} 
-                  style={{width: "35%", display:"inline"}}
-                  onChange={(event)=> {setMyQuantity(JSON.parse(event.target.value))}}>
-            <option value={0} disabled selected>Call a Quantity</option>
-            {currentCall.length ? quantities.map(quantity=>(
-                quantity < currentCall[0] ? <option value={quantity} disabled>{quantity}</option> 
-                : <option value={quantity}>{quantity}</option> 
-                ))
-              :
-              quantities.map(quantity=>(<option value={quantity}>{quantity}</option>))
-            }
-          </select>
-          <span> </span>
-          <select className={userToPlay===name ? "browser-default green lighten-1 white-text":"browser-default green lighten-2 white-text"}
-                  style={{width: "35%", display:"inline"}}
-                  onChange={(event)=> setMyValue(event.target.value)}>
-            <option value="" disabled selected>Dice Value</option>
-            {currentCall.length ?
-              values.map((diceValue, index)=>(
-                (index < values.indexOf(currentCall[1]) || index > values.indexOf(currentCall[1])+2) ? <option value={diceValue} disabled>{diceValue}</option>
-                  :<option value={diceValue}>{diceValue}</option>))
-              :
-              values.map((diceValue, index)=>(
-                (index>2) ? <option value={diceValue} disabled>{diceValue}</option> 
-                  :<option value={diceValue}>{diceValue}</option>))
-            }
-            {/* <option value={"Twos"}>Twos</option>
-            <option value={"Threes"}>Threes</option>
-            <option value={"Fours"}>Fours</option>
-            <option value={"Fives"}>Fives</option>
-            <option value={"Sixes"}>Sixes</option> */}
-          </select>
-          <button className={userToPlay===name ? "btn green darken-1 right" : "btn green lighten-1 right"} onClick={makeCall}>Make Call!</button>
-        </div>
+      <div className={userToPlay===name ? "row green lighten-1" : " row green lighten-2"} style={{padding:"0", margin:"0"}}>
+        {/* <div className="row" style={{padding:"0", margin:"0"}}> */}
+          <div className="input-field col s5 m4 l4" id="callColumn">
+            <select className={userToPlay===name ? "browser-default green lighten-1 white-text":"browser-default green lighten-2 white-text"} 
+                    style={{width: "100%", display:"inline"}}
+                    onChange={(event)=> {setMyQuantity(JSON.parse(event.target.value))}}>
+              <option value={0} disabled selected>Call Quantity</option>
+              {currentCall.length ? quantities.map(quantity=>(
+                  quantity < currentCall[0] ? <option value={quantity} disabled>{quantity}</option> 
+                  : <option value={quantity}>{quantity}</option> 
+                  ))
+                :
+                quantities.map(quantity=>(<option value={quantity}>{quantity}</option>))
+              }
+            </select>
+          </div>
+          <div className="input-field col s4 m4 l4" id="callColumn">
+            <select className={userToPlay===name ? "browser-default green lighten-1 white-text":"browser-default green lighten-2 white-text"}
+                    style={{width: "100%", display:"inline"}}
+                    onChange={(event)=> setMyValue(event.target.value)}>
+              <option value="" disabled selected>Dice Value</option>
+              {currentCall.length ?
+                values.map((diceValue, index)=>(
+                  (index < values.indexOf(currentCall[1]) || index > values.indexOf(currentCall[1])+2) ? <option value={diceValue} disabled>{diceValue}</option>
+                    :<option value={diceValue}>{diceValue}</option>))
+                :
+                values.map((diceValue, index)=>(
+                  (index>2) ? <option value={diceValue} disabled>{diceValue}</option> 
+                    :<option value={diceValue}>{diceValue}</option>))
+              }
+            </select>
+          </div>
+          <div className="input-field col s3 m4 l4 center" id="callColumn">
+            <button id="callColumnBtn" className={userToPlay===name ? "btn green darken-1" : "btn green lighten-1"} onClick={makeCall}>{window.innerWidth<600 ? "Call!":"Make Call!"}</button>
+          </div>
+        {/* </div> */}
       </div>
       <button className={userToPlay===name ? "btn red darken-1":"btn red lighten-3"} onClick={callLiar}>Call Liar!</button>
     </>

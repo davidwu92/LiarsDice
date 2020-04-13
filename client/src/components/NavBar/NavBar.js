@@ -14,9 +14,9 @@ const NavBar = () => {
         <div className="nav-wrapper blue accent-3">
           <a href="#!" className="brand-logo center">Liars' Dice</a>
            <ul className="right hide-on-med-and-down">
-            <li><a className="dropdown-trigger" href="#!" data-target="dropdown1">Join<i className="material-icons right">arrow_drop_down</i></a></li>
-            <li><a href="sass.html">How To Play</a></li>
-            <li><a href="badges.html">About</a></li>
+            <li><a href="/">Join a Room</a></li>
+            <li><a href="/rules" target="_blank">How to Play</a></li>
+            <li><a href="/about" target="_blank">About</a></li>
             {/* <!-- Dropdown Trigger --> */}
           </ul>
         </div>

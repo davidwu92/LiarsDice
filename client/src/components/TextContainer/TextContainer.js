@@ -93,11 +93,11 @@ const TextContainer = ({showHands, previousPlayer, setShowHands, socket, turnInd
           <div className="col m4 l4 center input-field">
             <p>Invite others to this room:</p>  
           </div>}
-          <div className="col s11 m7 l7 input-field center">
+          <div className="col s10 m7 l7 input-field center">
             <input className="blue-text text-lighten-1" style={{border:"none", textAlign:"center"}} 
                   type="text" value={`liars-dice-app.netlify.com/visitor?room=${room}`} id="inviteLink"/>
           </div>
-          <div className="col s1 m1 l1 input-field">
+          <div className="col s2 m1 l1 input-field">
             <button className="btn-floating btn-small pink" onClick={visitorLink}><i className="material-icons">content_copy</i></button>
           </div>
         </div>
@@ -147,12 +147,14 @@ const TextContainer = ({showHands, previousPlayer, setShowHands, socket, turnInd
             {/* START/NEW GAME button for master. */}
             {name===masterName ?
               <>
-                <div className="left" style={{marginLeft:"1%"}}><button className={"btn waves-effect amber darken-4"} onClick={startGame}>{roundNum===0?"START GAME":"NEW GAME"}</button></div>
-                {showHands ? <div className="right" style={{marginRight:"1%"}}><button onClick={startNewRound} className="btn amber darken-4">Start Round {roundNum+1}</button></div>
-                  :<div className="right" style={{marginRight:"1%"}}><button onClick={startNewRound} className="btn disabled">{roundNum!==0?<>Start Round {roundNum+1}</>:<>Next Round</>}</button></div>}
-                  <h5 className="center">Users in {room}</h5>
+                <div className="left" style={{marginLeft:"1%"}}>
+                  <button className={"btn-small waves-effect amber darken-4"} onClick={startGame}>{roundNum===0?"START GAME":"NEW GAME"}</button>
+                </div>
+                {showHands ? <div className="right" style={{marginRight:"1%"}}><button onClick={startNewRound} className="btn-small amber darken-4">Start Round {roundNum+1}</button></div>
+                  :<div className="right" style={{marginRight:"1%"}}><button onClick={startNewRound} className="btn-small disabled">{roundNum!==0?<>Start Round {roundNum+1}</>:<>Next Round</>}</button></div>}
+                  <h5 className="center">Players</h5>
               </>
-            :<h5 className="center">Users in {room}</h5>}
+            :<h5 className="center">Players</h5>}
             
             {roundNum===0? null:
               <>
@@ -161,19 +163,22 @@ const TextContainer = ({showHands, previousPlayer, setShowHands, socket, turnInd
             }
                 {users.map((user, index) => (
                     <div className={index%2?"row blue lighten-1":"row blue lighten-2"} style={{margin:"0", padding:"1% 1%"}}>
-                      <div key={user.name} className="col s5 m5 l5">
+                      <div key={user.name} className="col s3 m3 l3">
                         <h6 className={user.isMyTurn ? "green-text text-darken-3":null}>
                           <b>{user.name}</b>{(user.isMaster)?<span>  <i class="fas fa-chess-king"></i></span>:null}
                         </h6>
                       </div>
-                      <div className="col s7 m7 l7 center">
+                      <div className="col s1 m2 l2 left">
+                        <h6>{user.roundsWon ? user.roundsWon:null}</h6>
+                      </div>
+                      <div className="col s8 m7 l7 center">
                         {user.name===name ?
-                            <div onMouseEnter={showMyHand} onMouseLeave={hideMyHand}>
-                              {showMine||showHands ? myHandArray(user.hand):hiddenHandArray(user.hand)}
-                            </div>
-                            :<div>
-                              {showHands ? myHandArray(user.hand):hiddenHandArray(user.hand)}
-                            </div>
+                          <div onMouseEnter={showMyHand} onMouseLeave={hideMyHand}>
+                            {showMine||showHands ? myHandArray(user.hand):hiddenHandArray(user.hand)}
+                          </div>
+                          :<div>
+                            {showHands ? myHandArray(user.hand):hiddenHandArray(user.hand)}
+                          </div>
                         }
                       </div>
                     </div>

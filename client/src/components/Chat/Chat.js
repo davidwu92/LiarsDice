@@ -22,6 +22,7 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
   const [room, setRoom] = useState('') //same with room.
   
   const ENDPOINT = 'http://localhost:5000'
+  // const ENDPOINT = 'http://liars-dice-app.netlify.com'
 
   //this useEffect is for a user joining. It'll run whenever theres a change to ENDPOINT or the url.
   useEffect(()=>{
@@ -237,10 +238,7 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
         <button onClick={visitorLink}>Copy Link</button>
       </div> */}
       <div className="row" id="chatContainer">
-        {/* <button onClick={makeCall}>DUMMY CALL</button> */}
-        {/* <button onClick={testButton}>console.log currentCall and turnIndex</button> */}
-        {/* TextContainer currently shows all the users in the room. */}
-        <div className="col s12 m6 l6">
+        <div className="col s12 m6 l6" id="chatColumns">
           <div className="purple darken-3 white-text" id="textContainer">
             <TextContainer showHands={showHands} previousPlayer={previousPlayer} 
                 setShowHands={setShowHands} socket={socket} turnIndex={turnIndex} 
@@ -249,7 +247,7 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
           </div>
         </div>
 
-        <div className="col s12 m6 l6">
+        <div className="col s12 m6 l6" id="chatColumns">
           <div id="chatBoxContainer">
             {/* We need to pass off our ROOM property to the infobar! */}
             <InfoBar room={room} roundNum={roundNum}/> 

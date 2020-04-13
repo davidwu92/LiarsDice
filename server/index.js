@@ -57,6 +57,13 @@ io.on('connection', (socket)=>{ //this is a socket that'll be connected as a cli
     } 
   })
   
+  //in visitor.js, emit event ccalled "visitor"
+  socket.on('visitor',({room}, callback)=>{
+    if(getUsersInRoom(room).length){
+      socket.emit('playersInRoom',{playersInRoom: getUsersInRoom(room)})
+    }
+  })
+
   //user-generated messaging.
   //We'll be waiting for 'sendMessage' to be emitted from the front end.
   socket.on('sendMessage', (messageObj, callback)=>{
