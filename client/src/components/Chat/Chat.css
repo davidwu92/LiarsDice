@@ -42,6 +42,9 @@
     height: 60vh;
     margin: 1vh 0vh 1vh;
   }
+  #chatColumns{
+    margin: 0 ;
+  }
 }
 
 /* MEDIUM SCREENS */

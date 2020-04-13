@@ -237,7 +237,7 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
         <button onClick={visitorLink}>Copy Link</button>
       </div> */}
       <div className="row" id="chatContainer">
-        <div className="col s12 m6 l6">
+        <div className="col s12 m6 l6" id="chatColumns">
           <div className="purple darken-3 white-text" id="textContainer">
             <TextContainer showHands={showHands} previousPlayer={previousPlayer} 
                 setShowHands={setShowHands} socket={socket} turnIndex={turnIndex} 
@@ -246,7 +246,7 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
           </div>
         </div>
 
-        <div className="col s12 m6 l6">
+        <div className="col s12 m6 l6" id="chatColumns">
           <div id="chatBoxContainer">
             {/* We need to pass off our ROOM property to the infobar! */}
             <InfoBar room={room} roundNum={roundNum}/> 
