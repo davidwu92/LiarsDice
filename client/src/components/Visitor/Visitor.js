@@ -12,8 +12,8 @@ const Visitor = ({location}) => {
   const [users, setUsers] = useState('') //users is the array of all users in this chatroom. Not all of them are necessarily playing.
   const [playersInRoom, setPlayersInRoom] = useState([])
 
-  const ENDPOINT = 'http://localhost:5000'
-  // const ENDPOINT = 'http://liars-dice-app.netlify.com'
+  // const ENDPOINT = 'http://localhost:5000'
+  const ENDPOINT = 'http://liars-dice-app.netlify.com'
   
   let visitLink = window.location.href
   let startLink = visitLink.split('=')
