@@ -31,14 +31,21 @@
 
 /* SMALL SCREENS */
 @media (min-width: 300px) and (max-width: 600px) {
+  #chatContainer {
+    padding: 1vh 1vw 0 1vw;
+  }
   #textContainer{
     height: auto;
+  }
+  #chatBoxContainer{
+    height: 60vh;
+    margin: 1vh 0vh 1vh;
   }
 }
 
 /* MEDIUM SCREENS */
 @media (min-width: 601px) and (max-width: 992px) {
-
+  
 }
 
 /* LARGE SCREENS */
