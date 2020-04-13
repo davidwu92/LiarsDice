@@ -4,8 +4,8 @@
 
 #usersBox {
   padding:1% 0;
-  border-style:inset;
-  border-color: grey;
+  border-style:outset;
+  border-color: rgba(48, 130, 163, 0.452);
 }
 /* style={{padding:"2% 0%", borderStyle:"inset", borderColor:"grey"}} */
 

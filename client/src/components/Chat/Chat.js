@@ -237,9 +237,6 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
         <button onClick={visitorLink}>Copy Link</button>
       </div> */}
       <div className="row" id="chatContainer">
-        {/* <button onClick={makeCall}>DUMMY CALL</button> */}
-        {/* <button onClick={testButton}>console.log currentCall and turnIndex</button> */}
-        {/* TextContainer currently shows all the users in the room. */}
         <div className="col s12 m6 l6">
           <div className="purple darken-3 white-text" id="textContainer">
             <TextContainer showHands={showHands} previousPlayer={previousPlayer} 

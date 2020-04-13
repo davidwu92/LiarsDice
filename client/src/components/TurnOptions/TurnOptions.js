@@ -28,8 +28,8 @@ const TurnOptions = ({roundNum, users, name, currentCall, myQuantity, setMyQuant
 
   return(
     <>
-      <div className={userToPlay===name ? "green lighten-1" : "green lighten-2"}>
-        <div className="row" style={{padding:"0", margin:"0"}}>
+      <div className={userToPlay===name ? "row green lighten-1" : " row green lighten-2"} style={{padding:"0", margin:"0"}}>
+        {/* <div className="row" style={{padding:"0", margin:"0"}}> */}
           <div className="input-field col s5 m4 l4" id="callColumn">
             <select className={userToPlay===name ? "browser-default green lighten-1 white-text":"browser-default green lighten-2 white-text"} 
                     style={{width: "100%", display:"inline"}}
@@ -61,9 +61,9 @@ const TurnOptions = ({roundNum, users, name, currentCall, myQuantity, setMyQuant
             </select>
           </div>
           <div className="input-field col s3 m4 l4 center" id="callColumn">
-            <button className={userToPlay===name ? "btn green darken-1" : "btn green lighten-1"} onClick={makeCall}>{window.innerWidth<600 ? "Call!":"Make Call!"}</button>
+            <button id="callColumnBtn" className={userToPlay===name ? "btn green darken-1" : "btn green lighten-1"} onClick={makeCall}>{window.innerWidth<600 ? "Call!":"Make Call!"}</button>
           </div>
-        </div>
+        {/* </div> */}
       </div>
       <button className={userToPlay===name ? "btn red darken-1":"btn red lighten-3"} onClick={callLiar}>Call Liar!</button>
     </>

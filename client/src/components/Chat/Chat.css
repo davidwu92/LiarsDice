@@ -7,6 +7,7 @@
   /* align-items: center; */
 }
 
+
 /* All the chat components. */
 #chatBoxContainer {
   display: flex; 
@@ -32,7 +33,7 @@
 /* SMALL SCREENS */
 @media (min-width: 300px) and (max-width: 600px) {
   #chatContainer {
-    padding: 1vh 1vw 0 1vw;
+    padding: 1vh 0.5vw 0 0.5vw;
   }
   #textContainer{
     height: auto;

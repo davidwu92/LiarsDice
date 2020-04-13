@@ -1,3 +1,11 @@
+#callColumn {
+  margin: 1% 0vw;
+}
+
+#callColumnBtn{
+  margin-top:2%;
+}
+
 @media (min-width: 300px) and (max-width: 600px) {
   #callColumn {
     padding: 0px 4px
