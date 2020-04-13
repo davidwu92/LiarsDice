@@ -45,21 +45,21 @@ const Visitor = ({location}) => {
               {playersInRoom.map(player=>(<ul>{player.name}</ul>))}
             </>: null}
           </div>
-          <h5 className="white-text"><u>Enter a name to join the room!</u></h5>
-          <div>
+          <h5 className="white-text"><u>Enter a unique name and join them!</u></h5>
+          <div className="grey lighten-4">
             <input
               placeholder="Name"
-              className="joinInput white-text"
+              className="joinInput black-text center"
               type="text"
               onChange={(event) => setName(event.target.value)}
             ></input>
           </div>
           {/* CHAT component now takes the data: name and room.*/}
           <Link
-            onClick={(event) =>
-              !name || name == 'admin' ? event.preventDefault() : null
+            onClick={(event) => 
+              !name || name.toLowerCase() === 'admin' || playersInRoom.map(players=>players.name).includes(name.toLowerCase()) ? event.preventDefault() : null
             }
-            to={'chat?name' + '=' + `${name}` + startLink[1] + '=' + startLink[2]}
+            to={`/chat?name=${name.toLowerCase()}&room=${room}`}
           >
             <button className="button mt-20" type="submit">
               Join Room

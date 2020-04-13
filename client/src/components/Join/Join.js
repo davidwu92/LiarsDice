@@ -17,12 +17,17 @@ const Join = () =>{
         <div className="joinInnerContainer">
           <h1 className="joinHeading">Welcome to Liars' Dice</h1>
           <h2 className="joinHeading">Join A Room</h2>
-          <div><input placeholder="Name" className="joinInput white-text" type="text" onChange={(event)=>setName(event.target.value)}></input></div>
-          <div><input placeholder="Room" className="joinInput mt-20 white-text" type="text" onChange={(event)=>setRoom(event.target.value)}></input></div>
+          <div className="grey lighten-4">
+            <input placeholder="Name" className="joinInput black-text center" type="text" onChange={(event)=>setName(event.target.value)}></input>
+          </div>
+          <div className="row"></div>
+          <div className="grey lighten-4">
+            <input placeholder="Room" className="joinInput mt-20 black-text center" type="text" onChange={(event)=>setRoom(event.target.value)}></input>
+          </div>
           {/* CHAT component now takes the data: name and room.*/}
           <Link 
-            onClick={(event)=>(!name || !room || name==="admin") ? event.preventDefault() : null}
-            to={`/chat?name=${name}&room=${room}`}>
+            onClick={(event)=>(!name || !room || name.toLowerCase()==="admin") ? event.preventDefault() : null}
+            to={`/chat?name=${name.toLowerCase()}&room=${room}`}>
             <button className="button mt-20" type="submit">Join Room</button>
           </Link>
         </div>
