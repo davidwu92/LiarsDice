@@ -8,7 +8,7 @@ const Rules = () => {
       <Navbar/>
       <div id="rulesPage" className="row white-text">
         <div className="row">
-          <h3 className="center" style={{marginTop: "0", paddingTop:"2vw"}}>Basic Rules of Liars' Dice</h3>
+          <h3 className="center" style={{marginTop: "0", paddingTop:"2vw"}}>How to Play Liars' Dice</h3>
           <div className="col s12 m10 l10 offset-m1 offset-l1">
             <h5>Rule #1: Each player starts the game with five dice in their hand. Losing a round results in losing one dice.</h5>
             <h6 className="center grey-text text-lighten-1">You are eliminated from the game if you run out of dice!</h6>
