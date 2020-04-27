@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 // import onlineIcon from '../../icons/onlineIcon.png'
 import './TextContainer.css'
 
-const TextContainer = ({showHands, setShowHands, previousPlayer, socket, turnIndex, roundNum, users, room, name, startGame, currentCall}) => {
+const TextContainer = ({gameOver, showHands, setShowHands, previousPlayer, socket, turnIndex, roundNum, users, room, name, startGame, currentCall}) => {
   let masterName
   if(users){users.forEach(user=>user.isMaster ? masterName=user.name:null)}
   let userToPlay
@@ -157,13 +157,13 @@ const TextContainer = ({showHands, setShowHands, previousPlayer, socket, turnInd
       <div className="row" style={{margin:0}}>
         {users ? 
           <div className="light-blue darken-4" id="usersBox">
-            {/* START/NEW GAME button for master. */}
+            {/* START/NEW GAME, NEW ROUND buttons for master. */}
             {name===masterName ?
               <>
                 <div className="left" style={{marginLeft:"1%"}}>
                   <button className={"btn-small waves-effect amber darken-4"} onClick={startGame}>{roundNum===0?"START GAME":"NEW GAME"}</button>
                 </div>
-                {showHands ? <div className="right" style={{marginRight:"1%"}}><button onClick={startNewRound} className="btn-small amber darken-4">Start Round {roundNum+1}</button></div>
+                {showHands && !gameOver ? <div className="right" style={{marginRight:"1%"}}><button onClick={startNewRound} className="btn-small amber darken-4">Start Round {roundNum+1}</button></div>
                   :<div className="right" style={{marginRight:"1%"}}><button onClick={startNewRound} className="btn-small disabled">{roundNum!==0?<>Start Round {roundNum+1}</>:<>Next Round</>}</button></div>}
                   <h5 className="center">Players</h5>
               </>

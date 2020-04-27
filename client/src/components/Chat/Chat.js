@@ -117,7 +117,7 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
   const startGame = () =>{
     if(users.length>1){ //since only the master can start the game, pass room and master's name.
       socket.emit('startGame', {room, name}, ()=>{
-        console.log("You started the game.")
+        setGameOver(false)
       })
     } else {
       toast(`You need at least two players to start the game.`,
@@ -125,7 +125,7 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
     }
   }
 
-  
+
   //MY TURN FUNCTION: making a call.
   const makeCall = (event) =>{
     event.preventDefault()
@@ -153,7 +153,7 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
             toast("Your call can't have a lower quantity or a lower dice value. Try a new call, or call liar on the previous player!",{autoClose:5000, delay:0, hideProgressBar: true, type: "error"})
             return(false)
         }
-        let call = [myQuantity, myValue] // i.e. [3, "Fives"]
+        let call = [myQuantity, myValue]
         socket.emit('makeCall', {room, name, call, roundNum, turnIndex}, ()=>{
           console.log(`${name} made the call: ${call[0]+" "+call[1]}`)
         })
@@ -198,8 +198,9 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
       console.log(`Calling liar on the previous player.`)
       socket.emit('callLiar', {room, name, roundNum, turnIndex, previousPlayer, currentCall}, ()=>{
         console.log(`You called liar on ${previousPlayer}!`)
-        setMyQuantity(0)
-        setMyValue("")
+        //unsure why we're resetting myQuantity/myValue... removing for now.
+        // setMyQuantity(0)
+        // setMyValue("")
       })
     } else { //callLiar fails: there's no current call.
       toast(`You can't call liar if there's no current call to beat!`,
@@ -208,21 +209,17 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
     }
   }
 
-//   // link to current room
-//   const visitorLink = () => {
-//     var copyLink = document.getElementById('inviteLink')
-
-//     copyLink.select()
-//     copyLink.setSelectionRange(0, 99999)
-
-//     document.execCommand("copy")
-//   }
-//   // getting visitor link
-// let link = window.location.href 
-// let startLink = link.split('=')
-// let lastLink = link.split('&')
-// let finalLink = startLink[0]  + "=" + "&" + lastLink[1]
-
+  //GAME OVER FUNCTION
+  const [gameOver, setGameOver]=useState(false)
+  useEffect(()=>{
+    socket.on('gameOver', (object)=>{
+      setGameOver(true)
+      console.log("Game Over useEffect triggered. Winner: ")
+      console.log(object.roundWinner)
+      toast(`GAME OVER! ${object.roundWinner} WINS!`.toUpperCase(),
+      {autoClose:5000, delay:0, hideProgressBar: true, type: "success"})
+    })
+  },[])
 
   const testButton = () =>{
     // console.log("current call: "+currentCall)
@@ -240,7 +237,7 @@ const Chat =({location}) => { //pass in the URL (location); it comes from react 
       <div className="row" id="chatContainer">
         <div className="col s12 m6 l6" id="chatColumns">
           <div className="purple darken-3 white-text" id="textContainer">
-            <TextContainer showHands={showHands} setShowHands={setShowHands}
+            <TextContainer gameOver={gameOver} showHands={showHands} setShowHands={setShowHands}
                 previousPlayer={previousPlayer} socket={socket} turnIndex={turnIndex} 
                 roundNum={roundNum} users={users} room={room} name={name} 
                 startGame={startGame} currentCall={currentCall}/>
