@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 // import onlineIcon from '../../icons/onlineIcon.png'
 import './TextContainer.css'
 
-const TextContainer = ({showHands, previousPlayer, setShowHands, socket, turnIndex, roundNum, users, room, name, startGame, currentCall}) => {
+const TextContainer = ({showHands, setShowHands, previousPlayer, socket, turnIndex, roundNum, users, room, name, startGame, currentCall}) => {
   let masterName
   if(users){users.forEach(user=>user.isMaster ? masterName=user.name:null)}
   let userToPlay
@@ -162,7 +162,8 @@ const TextContainer = ({showHands, previousPlayer, setShowHands, socket, turnInd
               </>
             }
                 {users.map((user, index) => (
-                    <div className={index%2?"row blue lighten-1":"row blue lighten-2"} style={{margin:"0", padding:"1% 1%"}}>
+                    <div className={index%2?"row blue lighten-1":"row blue lighten-2"} 
+                        style={user.isMyTurn? {borderWidth: "2px", borderStyle: "solid", borderColor: "limegreen",margin:"0", padding:"1% 1%"}:{margin:"0", padding:"1% 1%"}}>
                       <div key={user.name} className="col s3 m3 l3">
                         <h6 className={user.isMyTurn ? "green-text text-darken-3":null}>
                           <b>{user.name}</b>{(user.isMaster)?<span>  <i class="fas fa-chess-king"></i></span>:null}
