@@ -82,6 +82,19 @@ const TextContainer = ({showHands, setShowHands, previousPlayer, socket, turnInd
     // let lastLink = link.split('&')
     // let finalLink = startLink[0]  + "=" + "&" + lastLink[1]
 
+//Show # of WINS
+  const showMedals = (roundsWon) => {
+    let medals = []
+    let i = 0
+    while (i<roundsWon){
+      medals.push(<><i class="amber-text fas fa-medal fa-1x"></i><span> </span></>)
+      i++
+    }
+    return(
+      medals
+    )
+  }
+
   return(
     <>
       {/* Game Messages. */}
@@ -158,7 +171,7 @@ const TextContainer = ({showHands, setShowHands, previousPlayer, socket, turnInd
             
             {roundNum===0? null:
               <>
-                  <p className="center">Hover cursor or tap on your hand to peek at your hand.</p>
+                  <p className="center grey-text text-lighten-1" style={{margin:"1px 0"}}><i>Hover cursor or tap on your hand to peek at your hand.</i></p>
               </>
             }
                 {users.map((user, index) => (
@@ -170,7 +183,8 @@ const TextContainer = ({showHands, setShowHands, previousPlayer, socket, turnInd
                         </h6>
                       </div>
                       <div className="col s1 m2 l2 left">
-                        <h6>{user.roundsWon ? user.roundsWon:null}</h6>
+                        {/* <h6>{user.roundsWon ? user.roundsWon:null}</h6> */}
+                        <h6>{showMedals(user.roundsWon)}</h6>
                       </div>
                       <div className="col s8 m7 l7 center">
                         {user.name===name ?
