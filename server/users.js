@@ -56,6 +56,9 @@ const startGameForRoom = (room)=>{ //NEW GAME FUNCTION
   users.forEach(user=>{
     if(user.room===room){
       user.hand=[Math.ceil(Math.random()*6),Math.ceil(Math.random()*6),Math.ceil(Math.random()*6),Math.ceil(Math.random()*6),Math.ceil(Math.random()*6)]
+      user.isMyTurn=false
+      user.roundsLost=0
+      user.roundsWon=0
       if(user.isMaster){
         user.isMyTurn = true
       }
@@ -65,7 +68,7 @@ const startGameForRoom = (room)=>{ //NEW GAME FUNCTION
 
 const passTurn = (room, turnIndex) =>{ //CHANGE WHOSE TURN IT IS. Checks if the next player still has die.
   if (users){
-    let players = users.filter((user)=>user.room===room)
+    let players = users.filter((user)=>user.room===room&&user.hand)
     let callerName = players[turnIndex%players.length].name
     // let nextPlayer = players[(turnIndex+1)%players.length].name
     let turnIndexChecker = turnIndex+1
@@ -155,7 +158,7 @@ const endRound = (room, name, previousPlayer, turnIndex, currentCall) =>{
               if(user.roundsLost === 5){
                 eliminatedPlayers.push(user.name)
                 loserEliminated = true
-                roundResults.losereliminated=true
+                roundResults.loserEliminated=true
               }
             }
           }
@@ -170,7 +173,8 @@ const endRound = (room, name, previousPlayer, turnIndex, currentCall) =>{
       } else { //current player lost round but stays in; starts next round.
         roundResults.turnIndex=turnIndex
       }
-    } else if (numberOfCalledValue < currentCall[0]){ //NOT ENOUGH DIE; "previousPlayer" loses the round.
+    }
+    else if (numberOfCalledValue < currentCall[0]){ //NOT ENOUGH DIE; "previousPlayer" loses the round.
       // console.log(`There were ${numberOfCalledValue} ${currentCall[1]}; previousPlayer (${previousPlayer}) loses the round!`)
       roundResults.roundWinner=name
       roundResults.roundLoser=previousPlayer
