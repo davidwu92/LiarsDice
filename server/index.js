@@ -57,7 +57,7 @@ io.on('connection', (socket)=>{ //this is a socket that'll be connected as a cli
     } 
   })
   
-  //in visitor.js, emit event ccalled "visitor"
+  //in visitor.js, emit event called "visitor"
   socket.on('visitor',({room}, callback)=>{
     if(getUsersInRoom(room).length){
       socket.emit('playersInRoom',{playersInRoom: getUsersInRoom(room)})
@@ -101,9 +101,11 @@ io.on('connection', (socket)=>{ //this is a socket that'll be connected as a cli
     let turnIndexChecker = passTurn(room, turnIndex)
 
     //emit that call to whole room.
-    call[0]>1 ?
-      io.to(room).emit('message',{user: name, text:`I call ${call[0] + " " + call[1]}'s.`, isGameAction: true}) 
-      :io.to(room).emit('message',{user: name, text:`I call ${call[0] + " " + call[1]}.`, isGameAction: true}) 
+    call[0]==1 ?
+      io.to(room).emit('message',{user: name, text:`I call ${call[0] + " " + call[1]}.`, isGameAction: true, makingCall: true}) 
+      : call[1]=="Six" ? 
+          io.to(room).emit('message',{user: name, text:`I call ${call[0] + " " + call[1]}es.`, isGameAction: true, makingCall: true}) 
+          :io.to(room).emit('message',{user: name, text:`I call ${call[0] + " " + call[1]}s.`, isGameAction: true, makingCall: true}) 
     io.to(room).emit('gameData', {users: getUsersInRoom(room), currentCall: call, previousPlayer: name, roundNum})
     io.to(room).emit('determineTurn', {newTurnIndex:turnIndexChecker})
     callback()
@@ -113,7 +115,7 @@ io.on('connection', (socket)=>{ //this is a socket that'll be connected as a cli
   socket.on('callLiar', ({room, name, roundNum, turnIndex, previousPlayer, currentCall}, callback)=>{
     console.log(`${name} calls liar on ${previousPlayer}!`)
     //emit message: {name} calls liar on {previousPlayer}; hands are being revealed!
-    io.to(room).emit('message',{user: name, text:`I call liar on ${previousPlayer}!`, isGameAction: true})
+    io.to(room).emit('message',{user: name, text:`I call liar on ${previousPlayer}!`, isGameAction: true, callingLiar: true})
     io.to(room).emit('revealHands', {revealHands:true})
     
     //determine round winner/loser; tick up roundsWon and roundsLost.    
@@ -126,7 +128,8 @@ io.on('connection', (socket)=>{ //this is a socket that'll be connected as a cli
       roundResults.numberOfCalledValue===1 ?
         io.to(room).emit('message', {user:"admin", text:`There was only 1 ${currentCall[1]}! ${roundResults.roundLoser} ran out of die and has been eliminated. ${roundResults.roundWinner} wins the game!`, isGameAction:true})
         :io.to(room).emit('message', {user:"admin", text:`There were ${roundResults.numberOfCalledValue} ${currentCall[1]}'s! ${roundResults.roundLoser} ran out of die and has been eliminated. ${roundResults.roundWinner} wins the game!`, isGameAction:true})
-      io.to(room).emit('message', {user:"admin", text:`The room master can start a new game!`})
+      io.to(room).emit('message', {user:"admin", text:`The room master can start a new game.`})
+      io.to(room).emit('gameOver', {roundWinner: roundResults.roundWinner})
     } else { //game goes on.
       if(roundResults.loserEliminated){
         roundResults.numberOfCalledValue===1 ? 
