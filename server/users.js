@@ -214,7 +214,7 @@ const startNewRound = (room, turnIndex) =>{
     let nextPlayer = players[turnIndex%players.length].name
 
     users.forEach(user=>{
-      if(user.room===room && user.hand){
+      if(user.room===room){
         //set everyone's isMyTurn to false except for nextPlayer.
         if(user.name===nextPlayer){user.isMyTurn=true} else {user.isMyTurn=false}
         
